@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Household Spending Estimates{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5">
+                <i class="bi bi-graph-up text-primary"></i>
+                Monthly Household Grocery Spending
+            </h1>
+            <p class="lead text-muted">
+                Estimates derived from ABS Monthly Household Spending Indicator data
+            </p>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Latest Month Card -->
+        <div class="col-md-3">
+            <div class="card border-primary h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <i class="bi bi-calendar-event"></i> Latest Month
+                    </h6>
+                    <h3 class="card-title text-primary mb-1">
+                        {{ stats.latest_value | format_currency }}
+                    </h3>
+                    <p class="card-text">
+                        <small class="text-muted">{{ stats.latest_month }}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12-Month Average Card -->
+        <div class="col-md-3">
+            <div class="card border-info h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <i class="bi bi-graph-up"></i> 12-Month Avg
+                    </h6>
+                    <h3 class="card-title text-info mb-1">
+                        {{ stats.rolling_12m | format_currency }}
+                    </h3>
+                    <p class="card-text">
+                        <small class="text-muted">Rolling average</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- YoY Growth Card -->
+        <div class="col-md-3">
+            <div class="card border-success h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <i class="bi bi-arrow-up-circle"></i> YoY Growth
+                    </h6>
+                    <h3 class="card-title {% if stats.yoy_growth and stats.yoy_growth > 0 %}text-danger{% else %}text-success{% endif %} mb-1">
+                        {{ stats.yoy_growth | format_percent }}
+                    </h3>
+                    <p class="card-text">
+                        <small class="text-muted">vs 12 months ago</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Households Card -->
+        <div class="col-md-3">
+            <div class="card border-secondary h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <i class="bi bi-people"></i> Households
+                    </h6>
+                    <h3 class="card-title text-secondary mb-1">
+                        {{ stats.households | format_number }}
+                    </h3>
+                    <p class="card-text">
+                        <small class="text-muted">Australian total</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bar-chart-line text-primary"></i>
+                        Per-Household Monthly Spending Trend
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-primary active" onclick="updateChart(12)">12 months</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="updateChart(24)">24 months</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="updateChart(999)">All data</button>
+                        </div>
+                    </div>
+                    <canvas id="spendingChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Alert -->
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5 class="alert-heading">
+                    <i class="bi bi-info-circle"></i> About These Estimates
+                </h5>
+                <p class="mb-0">
+                    These figures represent the <strong>average monthly grocery spending per Australian household</strong>, 
+                    calculated by dividing national food spending (from ABS MHSI data) by the total number of Australian households.
+                    This is an <strong>aggregate average</strong>, not a survey median, and does not reflect the distribution of 
+                    spending across different household types.
+                </p>
+                <hr>
+                <p class="mb-0">
+                    <a href="/methodology" class="alert-link">Learn more about the methodology →</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-calculator"></i> Data Coverage
+                    </h6>
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="bi bi-check-circle text-success"></i> {{ stats.total_months }} months of data</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Seasonally adjusted series</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Current price basis (nominal)</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Food category only (COICOP 01)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-database"></i> Data Source Status
+                    </h6>
+                    <p class="mb-2">
+                        {% if stats.data_source == 'api' %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-cloud-check"></i> Live API
+                        </span>
+                        <span class="text-muted">Connected to ABS Data Explorer</span>
+                        {% else %}
+                        <span class="badge bg-warning">
+                            <i class="bi bi-database"></i> Manual Data
+                        </span>
+                        <span class="text-muted">Using cached data</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-0">
+                        <small class="text-muted">
+                            National spending ({{ stats.latest_month }}): ${{ stats.latest_national | format_number }}M
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let currentChart = null;
+
+async function fetchChartData(months) {
+    const response = await fetch(`/api/chart-data?months=${months}`);
+    return await response.json();
+}
+
+async function updateChart(months) {
+    // Update button active state
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Fetch data
+    const data = await fetchChartData(months);
+    
+    // Destroy existing chart
+    if (currentChart) {
+        currentChart.destroy();
+    }
+    
+    // Create new chart
+    const ctx = document.getElementById('spendingChart').getContext('2d');
+    currentChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: 'Monthly Spending',
+                    data: data.values,
+                    borderColor: 'rgb(13, 110, 253)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2
+                },
+                {
+                    label: '12-Month Average',
+                    data: data.rolling_avg,
+                    borderColor: 'rgb(220, 53, 69)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += '$' + context.parsed.y.toFixed(2);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize chart on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateChart(12);
+});
+</script>
+{% endblock %}

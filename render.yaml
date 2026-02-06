@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: household-spending-estimates
+    env: docker
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 10000
