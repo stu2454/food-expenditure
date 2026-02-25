@@ -1,88 +1,18 @@
 """
 ABS Household Expenditure Survey (HES) 2015-16 Data
 Distribution of grocery spending by income and household type
-
-DUAL METHODOLOGY:
-- Table 3.4: Comparative analysis across household types (economies of scale)
-- Table 9.1: Specific lone person household spending (most accurate for single-person use)
 """
 
 from typing import Dict, List
 import pandas as pd
 
-# CPI Adjustment Factors
-# All-items CPI: 29.5% (RBA calculator 2015-16 to 2024-25)
-# Food-specific CPI: Higher than all-items (food inflation outpaced general inflation 2022-2024)
-CPI_ADJUSTMENT_FACTOR = 1.31  # 31% increase (conservative, used for Table 3.4 comparative analysis)
-CPI_ADJUSTMENT_FACTOR_FOOD = 1.32  # 32% increase (food-specific, used for Table 9.1 lone person)
+# CPI Adjustment Factor (Food CPI)
+# June Quarter 2016: 107.0 (base 2011-12 = 100)
+# December Quarter 2025 (estimated): 140.3
+CPI_ADJUSTMENT_FACTOR = 1.31  # 31% increase from 2015-16 to 2025
 
 # Source: ABS 6530.0 Household Expenditure Survey, Australia: Summary of Results, 2015-16
-# All values in 2015-16 dollars (weekly), adjusted to 2025 dollars using appropriate CPI
-
-# =============================================================================
-# TABLE 9.1: NON-FAMILY HOUSEHOLDS (LONE PERSON) - SPECIFIC ANALYSIS
-# =============================================================================
-# Use this for: HEN subsidy calculations, single-person specific estimates
-# More accurate for people living alone as it's purpose-built for this demographic
-
-SPENDING_NON_FAMILY_HOUSEHOLDS_2016 = {
-    'Under 35 years': {
-        'weekly_2016': 122.48,
-        'avg_persons': 1.0,
-        'note': 'Young professionals, students living alone'
-    },
-    '35-54 years': {
-        'weekly_2016': 126.48,
-        'avg_persons': 1.0,
-        'note': 'Middle-aged singles, divorced/separated'
-    },
-    '55-64 years': {
-        'weekly_2016': 104.99,
-        'avg_persons': 1.0,
-        'note': 'Pre-retirement singles'
-    },
-    '65 years and over': {
-        'weekly_2016': 87.49,
-        'avg_persons': 1.0,
-        'note': 'Pensioners, retirees living alone'
-    }
-}
-
-# =============================================================================
-# TABLE 3.4: HOUSEHOLD COMPOSITION - COMPARATIVE ANALYSIS
-# =============================================================================
-# Use this for: Distribution analysis, showing economies of scale, policy communication
-
-# Weekly grocery spending by household composition
-# Source: HES 2015-16 Table 3.4
-SPENDING_BY_HOUSEHOLD_TYPE_2016 = {
-    'One person': {
-        'weekly_2016': 89.0,
-        'avg_persons': 1.0,
-        'note': 'Living alone, used for comparative analysis. See Table 9.1 for age-specific lone person data.',
-        'source': 'Table 3.4'
-    },
-    'Couple only': {
-        'weekly_2016': 178.0,
-        'avg_persons': 2.0,
-        'note': 'No dependent children, often retirees or young couples'
-    },
-    'Couple with children': {
-        'weekly_2016': 278.0,
-        'avg_persons': 4.1,
-        'note': 'Dependent children under 15 or students'
-    },
-    'One parent with children': {
-        'weekly_2016': 147.0,
-        'avg_persons': 2.8,
-        'note': 'Single parent with dependent children'
-    },
-    'Other household': {
-        'weekly_2016': 198.0,
-        'avg_persons': 3.2,
-        'note': 'Multi-generational, group households, etc.'
-    }
-}
+# All values in 2015-16 dollars (weekly), will be adjusted to 2025 dollars
 
 # Weekly grocery spending by income quintile
 # Source: HES 2015-16 Table 3.3
@@ -117,6 +47,36 @@ SPENDING_BY_INCOME_QUINTILE_2016 = {
         'income_range': 'Over $168,000',
         'characteristics': 'High-income professionals, dual high earners',
         'avg_household_size': 3.1
+    }
+}
+
+# Weekly grocery spending by household composition
+# Source: HES 2015-16 Table 3.4
+SPENDING_BY_HOUSEHOLD_TYPE_2016 = {
+    'One person': {
+        'weekly_2016': 89.0,
+        'avg_persons': 1.0,
+        'note': 'Living alone, often retirees or young singles'
+    },
+    'Couple only': {
+        'weekly_2016': 178.0,
+        'avg_persons': 2.0,
+        'note': 'No dependent children, often retirees or young couples'
+    },
+    'Couple with children': {
+        'weekly_2016': 278.0,
+        'avg_persons': 4.1,
+        'note': 'Dependent children under 15 or students'
+    },
+    'One parent with children': {
+        'weekly_2016': 147.0,
+        'avg_persons': 2.8,
+        'note': 'Single parent with dependent children'
+    },
+    'Other household': {
+        'weekly_2016': 198.0,
+        'avg_persons': 3.2,
+        'note': 'Multi-generational, group households, etc.'
     }
 }
 
@@ -161,100 +121,10 @@ PROPORTION_OF_INCOME_2016 = {
 }
 
 
-def adjust_to_2025_dollars(value_2016: float, use_food_cpi: bool = False) -> float:
-    """
-    Adjust 2015-16 dollar values to 2025 dollars using CPI.
-    
-    Args:
-        value_2016: Value in 2015-16 dollars
-        use_food_cpi: If True, use food-specific CPI (32%). If False, use general CPI (31%)
-    """
-    factor = CPI_ADJUSTMENT_FACTOR_FOOD if use_food_cpi else CPI_ADJUSTMENT_FACTOR
-    return round(value_2016 * factor, 2)
+def adjust_to_2025_dollars(value_2016: float) -> float:
+    """Adjust 2015-16 dollar values to 2025 dollars using Food CPI."""
+    return round(value_2016 * CPI_ADJUSTMENT_FACTOR, 2)
 
-
-# =============================================================================
-# TABLE 9.1 FUNCTIONS - LONE PERSON HOUSEHOLDS (SPECIFIC)
-# =============================================================================
-
-def get_lone_person_spending_table_9_1() -> pd.DataFrame:
-    """
-    Get spending for people living alone using Table 9.1 Non-family households.
-    
-    More accurate than Table 3.4 for single-person specific analysis.
-    Shows age-specific variation in spending patterns.
-    Use this for: HEN subsidy calculations, lone-person specific estimates.
-    
-    Returns:
-        DataFrame with age-specific spending for people living alone
-    """
-    data = []
-    
-    for age_group, info in SPENDING_NON_FAMILY_HOUSEHOLDS_2016.items():
-        weekly_2025 = adjust_to_2025_dollars(info['weekly_2016'], use_food_cpi=True)
-        monthly_2025 = round(weekly_2025 * 4.33, 2)
-        daily_2025 = round(weekly_2025 / 7, 2)
-        
-        data.append({
-            'age_group': age_group,
-            'note': info['note'],
-            'weekly_2016': info['weekly_2016'],
-            'weekly_2025': weekly_2025,
-            'monthly_2025': monthly_2025,
-            'daily_2025': daily_2025,
-            'avg_persons': info['avg_persons']
-        })
-    
-    return pd.DataFrame(data)
-
-
-def get_lone_person_summary() -> Dict:
-    """
-    Get summary statistics for lone person households (Table 9.1).
-    
-    Provides average across all age groups and breakdown by age.
-    Use this for: HEN subsidy calculations, policy recommendations.
-    """
-    df = get_lone_person_spending_table_9_1()
-    
-    # Calculate average across all age groups
-    avg_weekly_2016 = sum([v['weekly_2016'] for v in SPENDING_NON_FAMILY_HOUSEHOLDS_2016.values()]) / 4
-    avg_weekly_2025 = adjust_to_2025_dollars(avg_weekly_2016, use_food_cpi=True)
-    avg_monthly_2025 = round(avg_weekly_2025 * 4.33, 2)
-    avg_daily_2025 = round(avg_weekly_2025 / 7, 2)
-    
-    return {
-        'data_source': 'HES 2015-16 Table 9.1 Non-family households',
-        'use_case': 'Specific lone person household spending (most accurate for people living alone)',
-        'cpi_factor': CPI_ADJUSTMENT_FACTOR_FOOD,
-        'cpi_percent': f'{(CPI_ADJUSTMENT_FACTOR_FOOD - 1) * 100:.0f}%',
-        'cpi_note': 'Food-specific CPI (higher than all-items CPI)',
-        'average_across_ages': {
-            'weekly_2016': round(avg_weekly_2016, 2),
-            'weekly_2025': avg_weekly_2025,
-            'monthly_2025': avg_monthly_2025,
-            'monthly_2025_4wk': round(avg_weekly_2025 * 4.0, 2),  # Alternative calculation
-            'daily_2025': avg_daily_2025
-        },
-        'age_range': {
-            'lowest': {
-                'age': '65 years and over',
-                'weekly_2025': df[df['age_group'] == '65 years and over']['weekly_2025'].values[0],
-                'monthly_2025': df[df['age_group'] == '65 years and over']['monthly_2025'].values[0]
-            },
-            'highest': {
-                'age': '35-54 years',
-                'weekly_2025': df[df['age_group'] == '35-54 years']['weekly_2025'].values[0],
-                'monthly_2025': df[df['age_group'] == '35-54 years']['monthly_2025'].values[0]
-            }
-        },
-        'age_variation': 'Spending varies by 44% between youngest and oldest age groups'
-    }
-
-
-# =============================================================================
-# TABLE 3.4 FUNCTIONS - HOUSEHOLD COMPOSITION (COMPARATIVE)
-# =============================================================================
 
 def get_income_quintile_data() -> pd.DataFrame:
     """Get spending by income quintile, adjusted to 2025 dollars."""
@@ -262,7 +132,7 @@ def get_income_quintile_data() -> pd.DataFrame:
     
     for quintile, info in SPENDING_BY_INCOME_QUINTILE_2016.items():
         weekly_2025 = adjust_to_2025_dollars(info['weekly_2016'])
-        monthly_2025 = round(weekly_2025 * 4.33, 2)
+        monthly_2025 = round(weekly_2025 * 4.33, 2)  # Average weeks per month
         per_person_monthly = round(monthly_2025 / info['avg_household_size'], 2)
         
         data.append({
@@ -456,12 +326,12 @@ def get_cross_tabulation_matrix() -> pd.DataFrame:
     household_types = ['One person', 'Couple only', 'Couple with children', 'One parent with children']
     quintiles = ['Quintile 1', 'Quintile 2', 'Quintile 3', 'Quintile 4', 'Quintile 5']
     
-    # Base per-person spending by household type (from direct data - using Table 3.4)
+    # Base per-person spending by household type (from direct data)
     base_per_person = {
-        'One person': household_df[household_df['household_type'] == 'One person']['per_person_monthly_2025'].values[0],
-        'Couple only': household_df[household_df['household_type'] == 'Couple only']['per_person_monthly_2025'].values[0],
-        'Couple with children': household_df[household_df['household_type'] == 'Couple with children']['per_person_monthly_2025'].values[0],
-        'One parent with children': household_df[household_df['household_type'] == 'One parent with children']['per_person_monthly_2025'].values[0]
+        'One person': 478,
+        'Couple only': 478,
+        'Couple with children': 364,
+        'One parent with children': 282
     }
     
     # Income adjustment factors (relative to middle quintile)
@@ -489,90 +359,17 @@ def get_cross_tabulation_matrix() -> pd.DataFrame:
     return pd.DataFrame(matrix_data)
 
 
-# =============================================================================
-# COMPARISON FUNCTION - TABLE 3.4 vs TABLE 9.1
-# =============================================================================
-
-def get_methodology_comparison() -> Dict:
-    """
-    Compare Table 3.4 vs Table 9.1 methodologies for single person spending.
-    
-    Explains when to use each and why they differ.
-    """
-    household_df = get_household_type_data()
-    lone_person_summary = get_lone_person_summary()
-    
-    table_3_4_value = household_df[household_df['household_type'] == 'One person']['monthly_2025'].values[0]
-    table_9_1_value = lone_person_summary['average_across_ages']['monthly_2025']
-    
-    difference = table_9_1_value - table_3_4_value
-    difference_pct = round((difference / table_3_4_value) * 100, 1)
-    
-    return {
-        'table_3_4': {
-            'source': 'HES Table 3.4 - Household Expenditure by Composition',
-            'value_monthly': table_3_4_value,
-            'cpi_used': f'{(CPI_ADJUSTMENT_FACTOR - 1) * 100:.0f}%',
-            'use_case': 'Comparative analysis across household types, showing economies of scale',
-            'strengths': [
-                'Enables comparison across all household types',
-                'Shows economies of scale clearly',
-                'Comprehensive household composition framework'
-            ],
-            'limitations': [
-                'May not be most accurate for specific lone person spending',
-                'Single aggregate value for "one person" households'
-            ]
-        },
-        'table_9_1': {
-            'source': 'HES Table 9.1 - Non-family Households (Lone Person)',
-            'value_monthly': table_9_1_value,
-            'cpi_used': f'{(CPI_ADJUSTMENT_FACTOR_FOOD - 1) * 100:.0f}%',
-            'use_case': 'Specific lone person household spending, HEN subsidy calculations',
-            'strengths': [
-                'Purpose-built for people living alone',
-                'Age-stratified data shows variation',
-                'Uses food-specific CPI for accuracy',
-                'Most accurate for single-person specific estimates'
-            ],
-            'limitations': [
-                'Only covers lone person households',
-                'Cannot show economies of scale comparisons'
-            ]
-        },
-        'difference': {
-            'amount': difference,
-            'percent': difference_pct,
-            'explanation': f'Table 9.1 is {difference_pct}% higher due to: (1) Age-specific averaging across lone person households, (2) Food-specific CPI vs general CPI'
-        },
-        'recommendation': {
-            'for_comparative_analysis': 'Use Table 3.4 to show how spending varies by household composition',
-            'for_lone_person_estimate': 'Use Table 9.1 for most accurate single-person household spending',
-            'for_hen_subsidy': 'Use Table 9.1 as it better reflects costs faced by people living alone'
-        }
-    }
-
-
 if __name__ == "__main__":
     # Test the data
-    print("=" * 80)
-    print("TABLE 3.4: COMPARATIVE ANALYSIS")
-    print("=" * 80)
-    print("\nIncome Quintile Data:")
+    print("Income Quintile Data:")
     print(get_income_quintile_data())
     print("\nHousehold Type Data:")
     print(get_household_type_data())
-    
-    print("\n" + "=" * 80)
-    print("TABLE 9.1: LONE PERSON SPECIFIC ANALYSIS")
-    print("=" * 80)
-    print("\nLone Person Spending by Age:")
-    print(get_lone_person_spending_table_9_1())
-    print("\nLone Person Summary:")
-    import json
-    print(json.dumps(get_lone_person_summary(), indent=2))
-    
-    print("\n" + "=" * 80)
-    print("METHODOLOGY COMPARISON")
-    print("=" * 80)
-    print(json.dumps(get_methodology_comparison(), indent=2))
+    print("\nNDIS Segment Data:")
+    print(get_ndis_segment_data())
+    print("\nSummary:")
+    print(get_distribution_summary())
+    print("\nPer-Person Summary:")
+    print(get_per_person_summary())
+    print("\nCross-Tabulation Matrix:")
+    print(get_cross_tabulation_matrix())

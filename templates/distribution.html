@@ -244,6 +244,178 @@
         </div>
     </div>
 
+
+    <!-- ============================================================ -->
+    <!-- TABLE 9.1 LONE PERSON ANALYSIS SECTION -->
+    <!-- ============================================================ -->
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3>
+                <i class="bi bi-person-circle text-success"></i>
+                Lone Person Household Analysis (Table 9.1)
+            </h3>
+            <p class="text-muted">
+                More accurate spending estimates for people living alone, with age-specific breakdown
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table"></i> Non-Family Households - Food Spending by Age
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-3">
+                        <strong><i class="bi bi-info-circle"></i> Data Source:</strong> HES 2015-16 Table 9.1 - Purpose-built for people living alone<br>
+                        <strong>CPI Applied:</strong> 32% (food-specific CPI, 2015-16 to 2025)<br>
+                        <strong>Use this for:</strong> NDIS HEN subsidy calculations, most accurate single-person estimates
+                    </div>
+                    
+                    {% if lone_person_data and lone_person_summary %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Age Group</th>
+                                    <th class="text-end">Weekly (2015-16)</th>
+                                    <th class="text-end">Weekly (2025)</th>
+                                    <th class="text-end">Monthly (2025)</th>
+                                    <th class="text-end">Daily (2025)</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in lone_person_data %}
+                                <tr>
+                                    <td><strong>{{ row.age_group }}</strong></td>
+                                    <td class="text-end">${{ "%.2f"|format(row.weekly_2016) }}</td>
+                                    <td class="text-end">${{ "%.2f"|format(row.weekly_2025) }}</td>
+                                    <td class="text-end"><strong>${{ "%.0f"|format(row.monthly_2025) }}</strong></td>
+                                    <td class="text-end">${{ "%.2f"|format(row.daily_2025) }}</td>
+                                    <td><small class="text-muted">{{ row.note }}</small></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-primary">
+                                <tr>
+                                    <td><strong>Average (All Ages)</strong></td>
+                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.weekly_2016) }}</strong></td>
+                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.weekly_2025) }}</strong></td>
+                                    <td class="text-end"><strong>${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}</strong></td>
+                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.daily_2025) }}</strong></td>
+                                    <td><small>Recommended for HEN subsidy</small></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card border-success h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="text-success">
+                                        <i class="bi bi-check-circle"></i> Recommended Value
+                                    </h6>
+                                    <h2 class="text-success mb-0">
+                                        ${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}
+                                    </h2>
+                                    <p class="text-muted mb-0">per month</p>
+                                    <hr>
+                                    <p class="mb-0">
+                                        <strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.daily_2025) }}</strong> per day
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card border-warning h-100">
+                                <div class="card-body">
+                                    <h6 class="text-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> Comparison to Table 3.4
+                                    </h6>
+                                    <table class="table table-sm mb-0">
+                                        <tr>
+                                            <td>Table 3.4 "One person":</td>
+                                            <td class="text-end"><strong>$505/month</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Table 9.1 Average:</td>
+                                            <td class="text-end"><strong>${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}/month</strong></td>
+                                        </tr>
+                                        <tr class="table-warning">
+                                            <td><strong>Difference:</strong></td>
+                                            <td class="text-end"><strong>+$126 (25%)</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card border-info h-100">
+                                <div class="card-body">
+                                    <h6 class="text-info">
+                                        <i class="bi bi-bar-chart"></i> Age Variation
+                                    </h6>
+                                    <p class="small mb-2">Spending varies by age group:</p>
+                                    <table class="table table-sm mb-0">
+                                        <tr>
+                                            <td><small>Highest (35-54):</small></td>
+                                            <td class="text-end"><small><strong>${{ "%.0f"|format(lone_person_summary.age_range.highest.monthly_2025) }}</strong></small></td>
+                                        </tr>
+                                        <tr>
+                                            <td><small>Lowest (65+):</small></td>
+                                            <td class="text-end"><small><strong>${{ "%.0f"|format(lone_person_summary.age_range.lowest.monthly_2025) }}</strong></small></td>
+                                        </tr>
+                                        <tr class="table-info">
+                                            <td><small><strong>Range:</strong></small></td>
+                                            <td class="text-end"><small><strong>44% variation</strong></small></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-3 mb-0">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-lightbulb"></i> Why Use Table 9.1 for NDIS HEN?
+                        </h6>
+                        <ul class="mb-0">
+                            <li><strong>Purpose-built:</strong> Specifically designed for people living alone</li>
+                            <li><strong>Age-specific:</strong> Shows variation across life stages (44% range)</li>
+                            <li><strong>Food-specific CPI:</strong> Uses actual food inflation (32%), not general CPI (31%)</li>
+                            <li><strong>Higher accuracy:</strong> Captures true costs without economies of scale</li>
+                            <li><strong>25% higher than Table 3.4:</strong> Reflects reality that living alone costs more</li>
+                        </ul>
+                    </div>
+                    
+                    {% else %}
+                    <div class="alert alert-danger">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle"></i> Table 9.1 Data Not Available
+                        </h5>
+                        <p class="mb-0">
+                            The Table 9.1 lone person data is not being passed to this template. 
+                            Please ensure <code>hes_data.py</code> and <code>app.py</code> are updated with the new functions.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- END TABLE 9.1 SECTION -->
+    <!-- ============================================================ -->
+
     <!-- PER-PERSON ANALYSIS SECTION (NEW!) -->
     <div class="row mb-4">
         <div class="col-12">

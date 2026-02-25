@@ -17,11 +17,7 @@ from hes_data import (
     get_chart_data_ndis,
     get_per_person_summary,
     get_per_person_chart_data,
-    get_cross_tabulation_matrix,
-    # New Table 9.1 functions
-    get_lone_person_spending_table_9_1,
-    get_lone_person_summary,
-    get_methodology_comparison
+    get_cross_tabulation_matrix
 )
 
 app = Flask(__name__)
@@ -56,11 +52,7 @@ def index():
 @app.route('/methodology')
 def methodology():
     """Methodology explanation page."""
-    # Get methodology comparison for display
-    comparison = get_methodology_comparison()
-    
-    return render_template('methodology.html', 
-                         methodology_comparison=comparison)
+    return render_template('methodology.html')
 
 
 @app.route('/data')
@@ -92,22 +84,13 @@ def distribution():
     per_person_summary = get_per_person_summary()
     cross_tab_matrix = get_cross_tabulation_matrix().to_dict('records')
     
-    # New: Add lone person analysis
-    lone_person_data = get_lone_person_spending_table_9_1().to_dict('records')
-    lone_person_summary = get_lone_person_summary()
-    methodology_comparison = get_methodology_comparison()
-    
     return render_template('distribution.html',
                          summary=summary,
                          quintile_data=quintile_data,
                          household_data=household_data,
                          ndis_data=ndis_data,
                          per_person_summary=per_person_summary,
-                         cross_tab_matrix=cross_tab_matrix,
-                         # New data
-                         lone_person_data=lone_person_data,
-                         lone_person_summary=lone_person_summary,
-                         methodology_comparison=methodology_comparison)
+                         cross_tab_matrix=cross_tab_matrix)
 
 
 @app.route('/api/chart-data')
@@ -168,26 +151,6 @@ def api_distribution_per_person():
 def api_per_person_summary():
     """API endpoint for per-person summary statistics."""
     return jsonify(get_per_person_summary())
-
-
-# NEW ENDPOINTS FOR TABLE 9.1 LONE PERSON ANALYSIS
-@app.route('/api/distribution/lone-person')
-def api_lone_person():
-    """API endpoint for lone person spending (Table 9.1)."""
-    df = get_lone_person_spending_table_9_1()
-    return jsonify(df.to_dict('records'))
-
-
-@app.route('/api/distribution/lone-person-summary')
-def api_lone_person_summary():
-    """API endpoint for lone person summary."""
-    return jsonify(get_lone_person_summary())
-
-
-@app.route('/api/distribution/methodology-comparison')
-def api_methodology_comparison():
-    """API endpoint for Table 3.4 vs Table 9.1 comparison."""
-    return jsonify(get_methodology_comparison())
 
 
 @app.template_filter('format_currency')
