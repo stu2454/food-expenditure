@@ -1,1171 +1,1286 @@
-{% extends "base.html" %}
-
-{% block title %}Methodology - Household Spending Estimates{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Methodology - Household Spending
+Estimates{% endblock %} {% block content %}
 <div class="container">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-5">
-                <i class="bi bi-book text-primary"></i>
-                Methodology
-            </h1>
-            <p class="lead text-muted">
-                How we calculate household and per-person grocery spending estimates
-            </p>
-        </div>
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5">
+        <i class="bi bi-book text-primary"></i>
+        Methodology
+      </h1>
+      <p class="lead text-muted">
+        How we calculate household and per-person grocery spending estimates
+      </p>
     </div>
+  </div>
 
-    <!-- Executive Summary -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-primary">
+  <!-- Executive Summary -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-clipboard-check"></i> Executive Summary
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            These estimates represent
+            <strong
+              >average monthly grocery spending per Australian household</strong
+            >, calculated using national-level data from the Australian Bureau
+            of Statistics (ABS). The methodology involves dividing total
+            national food spending by the total number of Australian households,
+            providing a simple, transparent, and defensible aggregate average.
+          </p>
+          <p>
+            Additionally, we provide
+            <strong>per-person (individual) spending estimates</strong> using
+            ABS Household Expenditure Survey (HES) data, showing how grocery
+            spending varies by both income level and household composition. This
+            reveals the significant impact of household size through economies
+            of scale.
+          </p>
+          <p class="mb-0">
+            This approach is designed for
+            <strong>policy analysis and communication purposes</strong> within
+            government contexts, prioritizing transparency, repeatability, and
+            clear provenance over precision in representing individual household
+            experiences.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculation Steps -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-calculator text-primary"></i> Calculation Steps
+      </h2>
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-primary">Step 1</span>
+            Obtain National Food Spending Data
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Data Source:</strong> ABS Monthly Household Spending
+            Indicator (MHSI)
+          </p>
+          <ul>
+            <li><strong>Catalogue:</strong> 5682.0</li>
+            <li>
+              <strong>Table:</strong> Table 2 - Monthly household spending
+              indicator by category
+            </li>
+            <li><strong>Category:</strong> Food (COICOP 01 classification)</li>
+            <li><strong>Series Type:</strong> Seasonally Adjusted</li>
+            <li><strong>Price Basis:</strong> Current prices (nominal)</li>
+            <li><strong>Measure:</strong> Level series</li>
+            <li><strong>Geography:</strong> Australia (national aggregate)</li>
+            <li><strong>Units:</strong> AUD$ millions</li>
+          </ul>
+          <div class="alert alert-info mb-0">
+            <strong>What's Included:</strong> Groceries, supermarket food
+            purchases, and at-home food consumption<br />
+            <strong>What's Excluded:</strong> Dining out, restaurants, cafes,
+            takeaway, food delivery services, alcohol, and tobacco
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-primary">Step 2</span>
+            Obtain Household Count Data
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Data Source:</strong> ABS Household and Family Projections
+          </p>
+          <ul>
+            <li><strong>Catalogue:</strong> 3236.0</li>
+            <li><strong>Series:</strong> Series B (middle assumption)</li>
+            <li><strong>Reference Date:</strong> June 30 (annual)</li>
+            <li><strong>Geography:</strong> Australia (national)</li>
+          </ul>
+          <p><strong>Application Method:</strong></p>
+          <p>
+            We use an <strong>annual step function</strong> approach: the
+            household count as at June 30 is applied to all months in that
+            calendar year. For example, the June 2024 household count is used
+            for all months from January 2024 through December 2024.
+          </p>
+          <div class="alert alert-warning mb-0">
+            <strong>Current Household Projections:</strong><br />
+            • 2024: 10,800,000 households<br />
+            • 2025: 11,000,000 households (projected)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-primary">Step 3</span>
+            Calculate Per-Household Monthly Spending
+          </h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Formula:</strong></p>
+          <div class="p-3 bg-light border rounded mb-3">
+            <code>
+              Per-Household Monthly Spending = (National Food Spending in AUD$
+              millions × 1,000,000) ÷ Household Count
+            </code>
+          </div>
+
+          <p><strong>Example Calculation (November 2025):</strong></p>
+          <ul>
+            <li>National food spending: $12,292.4 million</li>
+            <li>Household count (2025): 11,000,000</li>
+            <li>
+              Calculation: (12,292.4 × 1,000,000) ÷ 11,000,000 =
+              <strong>$1,117.49</strong> per household per month
+            </li>
+          </ul>
+
+          <div class="alert alert-success mb-0">
+            <strong>Unit Verification:</strong> The result is in Australian
+            dollars per household per month, representing the average monthly
+            grocery expenditure for a single household.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-primary">Step 4</span>
+            Calculate 12-Month Rolling Average
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            To smooth out monthly volatility and provide a more stable trend
+            indicator, we calculate a
+            <strong>12-month rolling average</strong> of the per-household
+            spending values.
+          </p>
+          <p><strong>Method:</strong></p>
+          <ul>
+            <li>
+              For each month, average the per-household spending values from the
+              current month and the preceding 11 months
+            </li>
+            <li>
+              For months with fewer than 12 prior observations, calculate
+              average using available data
+            </li>
+          </ul>
+          <div class="alert alert-info mb-0">
+            <strong>Purpose:</strong> The rolling average helps identify
+            underlying trends by reducing the impact of month-to-month
+            fluctuations caused by seasonal patterns (even after seasonal
+            adjustment), reporting timing, or temporary shocks.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5: Per-Person Calculations (NEW!) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-success">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-success">Step 5</span>
+            Calculate Per-Person (Individual) Spending
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            To understand <strong>individual spending</strong> (per-person
+            rather than per-household), we calculate per-capita grocery
+            expenditure by dividing household spending by average household
+            size.
+          </p>
+
+          <p><strong>Data Sources:</strong></p>
+          <ul>
+            <li>
+              <strong>Household Type Data:</strong> Direct from HES 2015-16
+              Table 9.1 (includes average persons per household type)
+            </li>
+            <li>
+              <strong>Income Quintile Data:</strong> Average household sizes
+              from HES 2015-16 Table 2.1
+            </li>
+          </ul>
+
+          <p><strong>Formula:</strong></p>
+          <div class="p-3 bg-light border rounded mb-3">
+            <code>
+              Per-Person Monthly Spending = (Per-Household Monthly Spending) ÷
+              (Average Household Size)
+            </code>
+          </div>
+
+          <p><strong>Example Calculations:</strong></p>
+
+          <p class="mb-2">
+            <strong>By Household Type (Direct HES Data):</strong>
+          </p>
+          <ul>
+            <li>
+              One person: $478/month ÷ 1.0 person =
+              <strong>$478/person/month</strong>
+            </li>
+            <li>
+              Couple with children: $1,493/month ÷ 4.1 persons =
+              <strong>$364/person/month</strong>
+            </li>
+            <li>
+              Single parent with children: $790/month ÷ 2.8 persons =
+              <strong>$282/person/month</strong>
+            </li>
+          </ul>
+
+          <p class="mb-2"><strong>By Income Quintile (Calculated):</strong></p>
+          <ul>
+            <li>
+              Quintile 1 (Lowest): $854/month ÷ 1.8 persons =
+              <strong>$474/person/month</strong>
+            </li>
+            <li>
+              Quintile 3 (Middle): $1,176/month ÷ 2.6 persons =
+              <strong>$452/person/month</strong>
+            </li>
+            <li>
+              Quintile 5 (Highest): $1,552/month ÷ 3.1 persons =
+              <strong>$501/person/month</strong>
+            </li>
+          </ul>
+
+          <div class="alert alert-success mb-0">
+            <strong>Key Finding:</strong> Per-person spending varies more by
+            household composition (69% variation: $282-$478/person) than by
+            income level (6% variation: $474-$501/person). This reveals that
+            economies of scale from larger households have a greater impact than
+            income differences.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6: Cross-Tabulation Matrix (NEW!) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-warning">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-warning">Step 6</span>
+            Create Cross-Tabulation Matrix (Income × Household Type)
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            To provide per-person spending estimates for specific combinations
+            of income level AND household type, we create a cross-tabulation
+            matrix using statistical modeling.
+          </p>
+
+          <p><strong>Methodology:</strong></p>
+          <ol>
+            <li class="mb-2">
+              <strong>Base Values:</strong> Start with per-person spending by
+              household type (from direct HES data)
+              <ul>
+                <li>One person: $478/person (baseline)</li>
+                <li>Couple only: $478/person (baseline)</li>
+                <li>Couple with children: $364/person (baseline)</li>
+                <li>Single parent with children: $282/person (baseline)</li>
+              </ul>
+            </li>
+            <li class="mb-2">
+              <strong>Income Adjustment Factors:</strong> Calculate relative
+              adjustments based on per-person spending patterns across income
+              quintiles:
+              <ul>
+                <li>Quintile 1 (Lowest): 0.88× (12% below middle)</li>
+                <li>Quintile 2: 0.94× (6% below middle)</li>
+                <li>Quintile 3 (Middle): 1.00× (baseline)</li>
+                <li>Quintile 4: 1.06× (6% above middle)</li>
+                <li>Quintile 5 (Highest): 1.12× (12% above middle)</li>
+              </ul>
+            </li>
+            <li class="mb-2">
+              <strong>Apply Adjustments:</strong> Multiply base household type
+              values by income adjustment factors
+              <ul>
+                <li>
+                  Example: Low-income single parent = $282 × 0.88 =
+                  <strong>$248/person</strong>
+                </li>
+                <li>
+                  Example: High-income couple only = $478 × 1.12 =
+                  <strong>$535/person</strong>
+                </li>
+              </ul>
+            </li>
+          </ol>
+
+          <div class="alert alert-warning mb-3">
+            <strong
+              ><i class="bi bi-exclamation-triangle"></i> Important
+              Methodological Note:</strong
+            >
+            <p class="mb-2">
+              The cross-tabulation matrix combines
+              <strong>direct HES data</strong> (household type averages) with
+              <strong>statistical modeling</strong> (income adjustments). The
+              resulting estimates are <strong>modeled approximations</strong>,
+              not direct survey measurements.
+            </p>
+            <p class="mb-0">
+              <strong>Confidence Levels:</strong>
+            </p>
+            <ul class="mb-0">
+              <li>
+                <strong>High confidence:</strong> Per-person by household type
+                (direct HES data)
+              </li>
+              <li>
+                <strong>Medium confidence:</strong> Per-person by income
+                quintile (calculated from HES)
+              </li>
+              <li>
+                <strong>Lower confidence:</strong> Cross-tab matrix cells
+                (modeled estimates)
+              </li>
+            </ul>
+          </div>
+
+          <p><strong>Limitations:</strong></p>
+          <ul class="mb-0">
+            <li>
+              Assumes income effects are uniform across household types (may not
+              be true)
+            </li>
+            <li>
+              Does not account for interaction effects between income and
+              household composition
+            </li>
+            <li>
+              Individual households within each cell may vary significantly from
+              the estimate
+            </li>
+            <li>
+              Based on 2015-16 data adjusted for inflation (patterns may have
+              changed)
+            </li>
+          </ul>
+
+          <div class="alert alert-info mb-0 mt-3">
+            <strong>Recommended Use:</strong> Use matrix estimates as
+            <strong>general guidance ranges</strong>
+            rather than precise predictions. For critical decisions, consider
+            the estimate ±20% as a reasonable variation range to account for
+            individual household differences.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Per-Person Analysis Section (NEW!) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-person-circle text-success"></i> Per-Person (Individual)
+        Spending Calculations
+      </h2>
+      <p class="text-muted">
+        Additional methodology for Distribution page per-person analysis
+      </p>
+    </div>
+  </div>
+
+  <!-- Step 5: Per-Person by Household Type -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-success">Step 5</span>
+            Calculate Per-Person Spending by Household Type
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Data Source:</strong> ABS Household Expenditure Survey (HES)
+            2015-16
+          </p>
+          <p><strong>Method:</strong></p>
+          <ol>
+            <li>
+              Obtain average household spending by household type (from HES
+              Table 9.1)
+            </li>
+            <li>
+              Obtain average persons per household for each type (from HES Table
+              2.1)
+            </li>
+            <li>
+              Divide: Per-person spending = Household spending ÷ Persons per
+              household
+            </li>
+            <li>
+              Adjust to 2025 dollars using Food CPI (31% increase from 2015-16)
+            </li>
+          </ol>
+
+          <p><strong>Example Calculation:</strong></p>
+          <div class="p-3 bg-light border rounded mb-3">
+            <strong>Couple with children:</strong><br />
+            • Household spending (2015-16): $278/week = $1,140/month<br />
+            • CPI adjustment to 2025: $1,140 × 1.31 = $1,493/month<br />
+            • Average household size: 4.1 persons<br />
+            •
+            <strong
+              >Per-person spending: $1,493 ÷ 4.1 = $364/person/month</strong
+            >
+          </div>
+
+          <div class="alert alert-success mb-0">
+            <strong>Data Quality:</strong> These calculations use direct HES
+            survey data and are highly reliable. Per-person values accurately
+            reflect economies of scale (bulk buying, sharing staples, reduced
+            waste).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6: Per-Person by Income Quintile -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-success">Step 6</span>
+            Calculate Per-Person Spending by Income Level
+          </h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Method:</strong></p>
+          <ol>
+            <li>
+              Obtain average household spending by income quintile (from HES
+              Table 3.3)
+            </li>
+            <li>
+              Obtain average household size for each quintile (from HES Table
+              2.1)
+            </li>
+            <li>
+              Divide: Per-person spending = Household spending ÷ Average
+              household size
+            </li>
+            <li>Adjust to 2025 dollars using Food CPI</li>
+          </ol>
+
+          <p><strong>Example Calculation (Quintile 1):</strong></p>
+          <div class="p-3 bg-light border rounded mb-3">
+            <strong>Lowest income quintile (Quintile 1):</strong><br />
+            • Household spending: $854/month (2025 $)<br />
+            • Average household size: 1.8 persons<br />
+            •
+            <strong>Per-person spending: $854 ÷ 1.8 = $474/person/month</strong>
+          </div>
+
+          <div class="alert alert-info mb-0">
+            <strong>Key Finding:</strong> Per-person spending varies modestly
+            across income quintiles ($474-$501/person), much less than
+            per-household variation. This is because lower-income households are
+            typically smaller (1.8 persons) while higher-income households are
+            larger (3.1 persons).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 7: Cross-Tabulation Matrix -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-success">Step 7</span>
+            Create Cross-Tabulation Matrix (Income × Household Type)
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Purpose:</strong> Estimate per-person spending for specific
+            combinations of income level AND household type.
+          </p>
+
+          <p><strong>Method (Statistical Modeling):</strong></p>
+          <ol>
+            <li>
+              <strong>Base values:</strong> Use direct HES per-person spending
+              by household type (from Step 5)
+            </li>
+            <li>
+              <strong>Income adjustments:</strong> Calculate relative income
+              effects from quintile analysis
+              <ul>
+                <li>Quintile 1: 88% of middle quintile (12% below)</li>
+                <li>Quintile 2: 94% of middle quintile (6% below)</li>
+                <li>Quintile 3: 100% (baseline)</li>
+                <li>Quintile 4: 106% of middle quintile (6% above)</li>
+                <li>Quintile 5: 112% of middle quintile (12% above)</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Apply adjustments:</strong> Multiply household type base
+              values by income factors
+            </li>
+          </ol>
+
+          <p><strong>Example Calculation:</strong></p>
+          <div class="p-3 bg-light border rounded mb-3">
+            <strong>Low-income (Quintile 1) couple with children:</strong><br />
+            • Base per-person for couples with children: $364/person (middle
+            income)<br />
+            • Income adjustment for Quintile 1: × 0.88<br />
+            •
+            <strong
+              >Estimated per-person: $364 × 0.88 = $320/person/month</strong
+            ><br />
+            (Shown as $290 in matrix after rounding to nearest $10)
+          </div>
+
+          <div class="alert alert-warning mb-0">
+            <strong>Important Limitations:</strong>
+            <ul class="mb-0">
+              <li>
+                <strong>Modeled estimates:</strong> Matrix values combine direct
+                data with statistical adjustments, not pure survey data
+              </li>
+              <li>
+                <strong>Approximations:</strong> Assumes income effects are
+                consistent across household types
+              </li>
+              <li>
+                <strong>Individual variation:</strong> Actual households within
+                each cell may vary significantly
+              </li>
+              <li>
+                <strong>Use as guidance:</strong> These are reasonable estimates
+                for policy planning, not precise predictions
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Economies of Scale Explanation -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-info">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-graph-down"></i> Understanding Economies of Scale
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong
+              >Why does per-person spending decrease in larger
+              households?</strong
+            >
+          </p>
+
+          <p><strong>Key factors:</strong></p>
+          <ul>
+            <li>
+              <strong>Bulk purchasing:</strong> Larger households buy in bulk,
+              reducing per-unit costs
+            </li>
+            <li>
+              <strong>Shared staples:</strong> Items like cooking oil, spices,
+              condiments serve multiple people
+            </li>
+            <li>
+              <strong>Reduced waste:</strong> Larger packages can be consumed
+              before spoiling
+            </li>
+            <li>
+              <strong>Meal sharing:</strong> Cooking one meal for 4 people is
+              more efficient than 4 separate meals
+            </li>
+            <li>
+              <strong>Lower variety:</strong> Families typically buy fewer
+              specialty items per person
+            </li>
+          </ul>
+
+          <p><strong>Measured impact:</strong></p>
+          <ul class="mb-0">
+            <li>Living alone: $478/person/month (highest per-person cost)</li>
+            <li>
+              Couple only: $478/person/month (no children means less efficiency)
+            </li>
+            <li>
+              Couple with children: $364/person/month (24% savings vs living
+              alone)
+            </li>
+            <li>
+              Single parent: $282/person/month (budget constraints + some
+              economies of scale)
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW SECTION: DUAL METHODOLOGY -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-diagram-3 text-info"></i> Dual Methodology for Single
+        Person Spending
+      </h2>
+      <p class="text-muted">
+        Understanding the difference between Table 9.1 and Table 9.1 approaches
+      </p>
+    </div>
+  </div>
+
+  <!-- Why Two Approaches Card -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card border-info">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="bi bi-question-circle text-info"></i> Why Two Different
+            Approaches?
+          </h5>
+        </div>
+        <div class="card-body">
+          <p>
+            This application uses
+            <strong>two complementary methodologies</strong> from the ABS
+            Household Expenditure Survey (HES) 2015-16, each serving different
+            analytical purposes:
+          </p>
+
+          <div class="row mt-3">
+            <div class="col-md-6 mb-3">
+              <div class="card h-100 border-primary">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-clipboard-check"></i> Executive Summary</h5>
+                  <strong>Table 9.1: Household Composition</strong>
                 </div>
                 <div class="card-body">
-                    <p>
-                        These estimates represent <strong>average monthly grocery spending per Australian household</strong>, 
-                        calculated using national-level data from the Australian Bureau of Statistics (ABS). The methodology 
-                        involves dividing total national food spending by the total number of Australian households, providing 
-                        a simple, transparent, and defensible aggregate average.
-                    </p>
-                    <p>
-                        Additionally, we provide <strong>per-person (individual) spending estimates</strong> using ABS Household 
-                        Expenditure Survey (HES) data, showing how grocery spending varies by both income level and household 
-                        composition. This reveals the significant impact of household size through economies of scale.
-                    </p>
-                    <p class="mb-0">
-                        This approach is designed for <strong>policy analysis and communication purposes</strong> within 
-                        government contexts, prioritizing transparency, repeatability, and clear provenance over precision 
-                        in representing individual household experiences.
-                    </p>
+                  <p class="mb-2">
+                    <strong>Purpose:</strong> Comparative analysis across
+                    household types
+                  </p>
+
+                  <p class="mb-2"><strong>Use this for:</strong></p>
+                  <ul class="mb-3">
+                    <li>
+                      Understanding spending patterns across different household
+                      structures
+                    </li>
+                    <li>Demonstrating economies of scale</li>
+                    <li>Policy communication and distribution analysis</li>
+                  </ul>
+
+                  <div class="alert alert-primary mb-0">
+                    <strong>Key insight:</strong> Families save ~24% per person
+                    compared to living alone due to bulk buying, shared staples,
+                    and reduced waste
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Calculation Steps -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-calculator text-primary"></i> Calculation Steps
-            </h2>
-        </div>
-    </div>
-
-    <!-- Step 1 -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-primary">Step 1</span>
-                        Obtain National Food Spending Data
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Data Source:</strong> ABS Monthly Household Spending Indicator (MHSI)</p>
-                    <ul>
-                        <li><strong>Catalogue:</strong> 5682.0</li>
-                        <li><strong>Table:</strong> Table 2 - Monthly household spending indicator by category</li>
-                        <li><strong>Category:</strong> Food (COICOP 01 classification)</li>
-                        <li><strong>Series Type:</strong> Seasonally Adjusted</li>
-                        <li><strong>Price Basis:</strong> Current prices (nominal)</li>
-                        <li><strong>Measure:</strong> Level series</li>
-                        <li><strong>Geography:</strong> Australia (national aggregate)</li>
-                        <li><strong>Units:</strong> AUD$ millions</li>
-                    </ul>
-                    <div class="alert alert-info mb-0">
-                        <strong>What's Included:</strong> Groceries, supermarket food purchases, and at-home food consumption<br>
-                        <strong>What's Excluded:</strong> Dining out, restaurants, cafes, takeaway, food delivery services, alcohol, and tobacco
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 2 -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-primary">Step 2</span>
-                        Obtain Household Count Data
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Data Source:</strong> ABS Household and Family Projections</p>
-                    <ul>
-                        <li><strong>Catalogue:</strong> 3236.0</li>
-                        <li><strong>Series:</strong> Series B (middle assumption)</li>
-                        <li><strong>Reference Date:</strong> June 30 (annual)</li>
-                        <li><strong>Geography:</strong> Australia (national)</li>
-                    </ul>
-                    <p><strong>Application Method:</strong></p>
-                    <p>
-                        We use an <strong>annual step function</strong> approach: the household count as at June 30 is applied 
-                        to all months in that calendar year. For example, the June 2024 household count is used for all months 
-                        from January 2024 through December 2024.
-                    </p>
-                    <div class="alert alert-warning mb-0">
-                        <strong>Current Household Projections:</strong><br>
-                        • 2024: 10,800,000 households<br>
-                        • 2025: 11,000,000 households (projected)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 3 -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-primary">Step 3</span>
-                        Calculate Per-Household Monthly Spending
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Formula:</strong></p>
-                    <div class="p-3 bg-light border rounded mb-3">
-                        <code>
-                            Per-Household Monthly Spending = (National Food Spending in AUD$ millions × 1,000,000) ÷ Household Count
-                        </code>
-                    </div>
-                    
-                    <p><strong>Example Calculation (November 2025):</strong></p>
-                    <ul>
-                        <li>National food spending: $12,292.4 million</li>
-                        <li>Household count (2025): 11,000,000</li>
-                        <li>Calculation: (12,292.4 × 1,000,000) ÷ 11,000,000 = <strong>$1,117.49</strong> per household per month</li>
-                    </ul>
-                    
-                    <div class="alert alert-success mb-0">
-                        <strong>Unit Verification:</strong> The result is in Australian dollars per household per month, 
-                        representing the average monthly grocery expenditure for a single household.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 4 -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-primary">Step 4</span>
-                        Calculate 12-Month Rolling Average
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        To smooth out monthly volatility and provide a more stable trend indicator, we calculate a 
-                        <strong>12-month rolling average</strong> of the per-household spending values.
-                    </p>
-                    <p><strong>Method:</strong></p>
-                    <ul>
-                        <li>For each month, average the per-household spending values from the current month and the preceding 11 months</li>
-                        <li>For months with fewer than 12 prior observations, calculate average using available data</li>
-                    </ul>
-                    <div class="alert alert-info mb-0">
-                        <strong>Purpose:</strong> The rolling average helps identify underlying trends by reducing the impact 
-                        of month-to-month fluctuations caused by seasonal patterns (even after seasonal adjustment), 
-                        reporting timing, or temporary shocks.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 5: Per-Person Calculations (NEW!) -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-success">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-success">Step 5</span>
-                        Calculate Per-Person (Individual) Spending
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        To understand <strong>individual spending</strong> (per-person rather than per-household), we calculate 
-                        per-capita grocery expenditure by dividing household spending by average household size.
-                    </p>
-                    
-                    <p><strong>Data Sources:</strong></p>
-                    <ul>
-                        <li><strong>Household Type Data:</strong> Direct from HES 2015-16 Table 3.4 (includes average persons per household type)</li>
-                        <li><strong>Income Quintile Data:</strong> Average household sizes from HES 2015-16 Table 2.1</li>
-                    </ul>
-
-                    <p><strong>Formula:</strong></p>
-                    <div class="p-3 bg-light border rounded mb-3">
-                        <code>
-                            Per-Person Monthly Spending = (Per-Household Monthly Spending) ÷ (Average Household Size)
-                        </code>
-                    </div>
-                    
-                    <p><strong>Example Calculations:</strong></p>
-                    
-                    <p class="mb-2"><strong>By Household Type (Direct HES Data):</strong></p>
-                    <ul>
-                        <li>One person: $478/month ÷ 1.0 person = <strong>$478/person/month</strong></li>
-                        <li>Couple with children: $1,493/month ÷ 4.1 persons = <strong>$364/person/month</strong></li>
-                        <li>Single parent with children: $790/month ÷ 2.8 persons = <strong>$282/person/month</strong></li>
-                    </ul>
-                    
-                    <p class="mb-2"><strong>By Income Quintile (Calculated):</strong></p>
-                    <ul>
-                        <li>Quintile 1 (Lowest): $854/month ÷ 1.8 persons = <strong>$474/person/month</strong></li>
-                        <li>Quintile 3 (Middle): $1,176/month ÷ 2.6 persons = <strong>$452/person/month</strong></li>
-                        <li>Quintile 5 (Highest): $1,552/month ÷ 3.1 persons = <strong>$501/person/month</strong></li>
-                    </ul>
-                    
-                    <div class="alert alert-success mb-0">
-                        <strong>Key Finding:</strong> Per-person spending varies more by household composition (69% variation: 
-                        $282-$478/person) than by income level (6% variation: $474-$501/person). This reveals that economies 
-                        of scale from larger households have a greater impact than income differences.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 6: Cross-Tabulation Matrix (NEW!) -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-warning">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-warning">Step 6</span>
-                        Create Cross-Tabulation Matrix (Income × Household Type)
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        To provide per-person spending estimates for specific combinations of income level AND household type, 
-                        we create a cross-tabulation matrix using statistical modeling.
-                    </p>
-                    
-                    <p><strong>Methodology:</strong></p>
-                    <ol>
-                        <li class="mb-2">
-                            <strong>Base Values:</strong> Start with per-person spending by household type (from direct HES data)
-                            <ul>
-                                <li>One person: $478/person (baseline)</li>
-                                <li>Couple only: $478/person (baseline)</li>
-                                <li>Couple with children: $364/person (baseline)</li>
-                                <li>Single parent with children: $282/person (baseline)</li>
-                            </ul>
-                        </li>
-                        <li class="mb-2">
-                            <strong>Income Adjustment Factors:</strong> Calculate relative adjustments based on per-person spending patterns across income quintiles:
-                            <ul>
-                                <li>Quintile 1 (Lowest): 0.88× (12% below middle)</li>
-                                <li>Quintile 2: 0.94× (6% below middle)</li>
-                                <li>Quintile 3 (Middle): 1.00× (baseline)</li>
-                                <li>Quintile 4: 1.06× (6% above middle)</li>
-                                <li>Quintile 5 (Highest): 1.12× (12% above middle)</li>
-                            </ul>
-                        </li>
-                        <li class="mb-2">
-                            <strong>Apply Adjustments:</strong> Multiply base household type values by income adjustment factors
-                            <ul>
-                                <li>Example: Low-income single parent = $282 × 0.88 = <strong>$248/person</strong></li>
-                                <li>Example: High-income couple only = $478 × 1.12 = <strong>$535/person</strong></li>
-                            </ul>
-                        </li>
-                    </ol>
-                    
-                    <div class="alert alert-warning mb-3">
-                        <strong><i class="bi bi-exclamation-triangle"></i> Important Methodological Note:</strong>
-                        <p class="mb-2">
-                            The cross-tabulation matrix combines <strong>direct HES data</strong> (household type averages) 
-                            with <strong>statistical modeling</strong> (income adjustments). The resulting estimates are 
-                            <strong>modeled approximations</strong>, not direct survey measurements.
-                        </p>
-                        <p class="mb-0">
-                            <strong>Confidence Levels:</strong>
-                        </p>
-                        <ul class="mb-0">
-                            <li><strong>High confidence:</strong> Per-person by household type (direct HES data)</li>
-                            <li><strong>Medium confidence:</strong> Per-person by income quintile (calculated from HES)</li>
-                            <li><strong>Lower confidence:</strong> Cross-tab matrix cells (modeled estimates)</li>
-                        </ul>
-                    </div>
-                    
-                    <p><strong>Limitations:</strong></p>
-                    <ul class="mb-0">
-                        <li>Assumes income effects are uniform across household types (may not be true)</li>
-                        <li>Does not account for interaction effects between income and household composition</li>
-                        <li>Individual households within each cell may vary significantly from the estimate</li>
-                        <li>Based on 2015-16 data adjusted for inflation (patterns may have changed)</li>
-                    </ul>
-                    
-                    <div class="alert alert-info mb-0 mt-3">
-                        <strong>Recommended Use:</strong> Use matrix estimates as <strong>general guidance ranges</strong> 
-                        rather than precise predictions. For critical decisions, consider the estimate ±20% as a reasonable 
-                        variation range to account for individual household differences.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Per-Person Analysis Section (NEW!) -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-person-circle text-success"></i> Per-Person (Individual) Spending Calculations
-            </h2>
-            <p class="text-muted">
-                Additional methodology for Distribution page per-person analysis
-            </p>
-        </div>
-    </div>
-
-    <!-- Step 5: Per-Person by Household Type -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-success">Step 5</span>
-                        Calculate Per-Person Spending by Household Type
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Data Source:</strong> ABS Household Expenditure Survey (HES) 2015-16</p>
-                    <p><strong>Method:</strong></p>
-                    <ol>
-                        <li>Obtain average household spending by household type (from HES Table 3.4)</li>
-                        <li>Obtain average persons per household for each type (from HES Table 2.1)</li>
-                        <li>Divide: Per-person spending = Household spending ÷ Persons per household</li>
-                        <li>Adjust to 2025 dollars using Food CPI (31% increase from 2015-16)</li>
-                    </ol>
-                    
-                    <p><strong>Example Calculation:</strong></p>
-                    <div class="p-3 bg-light border rounded mb-3">
-                        <strong>Couple with children:</strong><br>
-                        • Household spending (2015-16): $278/week = $1,140/month<br>
-                        • CPI adjustment to 2025: $1,140 × 1.31 = $1,493/month<br>
-                        • Average household size: 4.1 persons<br>
-                        • <strong>Per-person spending: $1,493 ÷ 4.1 = $364/person/month</strong>
-                    </div>
-                    
-                    <div class="alert alert-success mb-0">
-                        <strong>Data Quality:</strong> These calculations use direct HES survey data and are highly reliable. 
-                        Per-person values accurately reflect economies of scale (bulk buying, sharing staples, reduced waste).
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 6: Per-Person by Income Quintile -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-success">Step 6</span>
-                        Calculate Per-Person Spending by Income Level
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Method:</strong></p>
-                    <ol>
-                        <li>Obtain average household spending by income quintile (from HES Table 3.3)</li>
-                        <li>Obtain average household size for each quintile (from HES Table 2.1)</li>
-                        <li>Divide: Per-person spending = Household spending ÷ Average household size</li>
-                        <li>Adjust to 2025 dollars using Food CPI</li>
-                    </ol>
-                    
-                    <p><strong>Example Calculation (Quintile 1):</strong></p>
-                    <div class="p-3 bg-light border rounded mb-3">
-                        <strong>Lowest income quintile (Quintile 1):</strong><br>
-                        • Household spending: $854/month (2025 $)<br>
-                        • Average household size: 1.8 persons<br>
-                        • <strong>Per-person spending: $854 ÷ 1.8 = $474/person/month</strong>
-                    </div>
-                    
-                    <div class="alert alert-info mb-0">
-                        <strong>Key Finding:</strong> Per-person spending varies modestly across income quintiles ($474-$501/person), 
-                        much less than per-household variation. This is because lower-income households are typically smaller 
-                        (1.8 persons) while higher-income households are larger (3.1 persons).
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 7: Cross-Tabulation Matrix -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-success">Step 7</span>
-                        Create Cross-Tabulation Matrix (Income × Household Type)
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Purpose:</strong> Estimate per-person spending for specific combinations of income level AND household type.</p>
-                    
-                    <p><strong>Method (Statistical Modeling):</strong></p>
-                    <ol>
-                        <li><strong>Base values:</strong> Use direct HES per-person spending by household type (from Step 5)</li>
-                        <li><strong>Income adjustments:</strong> Calculate relative income effects from quintile analysis
-                            <ul>
-                                <li>Quintile 1: 88% of middle quintile (12% below)</li>
-                                <li>Quintile 2: 94% of middle quintile (6% below)</li>
-                                <li>Quintile 3: 100% (baseline)</li>
-                                <li>Quintile 4: 106% of middle quintile (6% above)</li>
-                                <li>Quintile 5: 112% of middle quintile (12% above)</li>
-                            </ul>
-                        </li>
-                        <li><strong>Apply adjustments:</strong> Multiply household type base values by income factors</li>
-                    </ol>
-                    
-                    <p><strong>Example Calculation:</strong></p>
-                    <div class="p-3 bg-light border rounded mb-3">
-                        <strong>Low-income (Quintile 1) couple with children:</strong><br>
-                        • Base per-person for couples with children: $364/person (middle income)<br>
-                        • Income adjustment for Quintile 1: × 0.88<br>
-                        • <strong>Estimated per-person: $364 × 0.88 = $320/person/month</strong><br>
-                        (Shown as $290 in matrix after rounding to nearest $10)
-                    </div>
-                    
-                    <div class="alert alert-warning mb-0">
-                        <strong>Important Limitations:</strong>
-                        <ul class="mb-0">
-                            <li><strong>Modeled estimates:</strong> Matrix values combine direct data with statistical adjustments, not pure survey data</li>
-                            <li><strong>Approximations:</strong> Assumes income effects are consistent across household types</li>
-                            <li><strong>Individual variation:</strong> Actual households within each cell may vary significantly</li>
-                            <li><strong>Use as guidance:</strong> These are reasonable estimates for policy planning, not precise predictions</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Economies of Scale Explanation -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-info">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-down"></i> Understanding Economies of Scale
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Why does per-person spending decrease in larger households?</strong></p>
-                    
-                    <p><strong>Key factors:</strong></p>
-                    <ul>
-                        <li><strong>Bulk purchasing:</strong> Larger households buy in bulk, reducing per-unit costs</li>
-                        <li><strong>Shared staples:</strong> Items like cooking oil, spices, condiments serve multiple people</li>
-                        <li><strong>Reduced waste:</strong> Larger packages can be consumed before spoiling</li>
-                        <li><strong>Meal sharing:</strong> Cooking one meal for 4 people is more efficient than 4 separate meals</li>
-                        <li><strong>Lower variety:</strong> Families typically buy fewer specialty items per person</li>
-                    </ul>
-                    
-                    <p><strong>Measured impact:</strong></p>
-                    <ul class="mb-0">
-                        <li>Living alone: $478/person/month (highest per-person cost)</li>
-                        <li>Couple only: $478/person/month (no children means less efficiency)</li>
-                        <li>Couple with children: $364/person/month (24% savings vs living alone)</li>
-                        <li>Single parent: $282/person/month (budget constraints + some economies of scale)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NEW SECTION: DUAL METHODOLOGY -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-diagram-3 text-info"></i> Dual Methodology for Single Person Spending
-            </h2>
-            <p class="text-muted">
-                Understanding the difference between Table 3.4 and Table 9.1 approaches
-            </p>
-        </div>
-    </div>
-
-    <!-- Why Two Approaches Card -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-info">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-question-circle text-info"></i> Why Two Different Approaches?
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        This application uses <strong>two complementary methodologies</strong> from the ABS 
-                        Household Expenditure Survey (HES) 2015-16, each serving different analytical purposes:
-                    </p>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100 border-primary">
-                                <div class="card-header bg-primary text-white">
-                                    <strong>Table 3.4: Household Composition</strong>
-                                </div>
-                                <div class="card-body">
-                                    <p class="mb-2"><strong>Purpose:</strong> Comparative analysis across household types</p>
-                                    
-                                    <p class="mb-2"><strong>Use this for:</strong></p>
-                                    <ul class="mb-3">
-                                        <li>Understanding spending patterns across different household structures</li>
-                                        <li>Demonstrating economies of scale</li>
-                                        <li>Policy communication and distribution analysis</li>
-                                    </ul>
-                                    
-                                    <div class="alert alert-primary mb-0">
-                                        <strong>Key insight:</strong> Families save ~24% per person compared to living alone due to bulk buying, 
-                                        shared staples, and reduced waste
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <div class="card h-100 border-success">
-                                <div class="card-header bg-success text-white">
-                                    <strong>Table 9.1: Non-Family Households</strong>
-                                </div>
-                                <div class="card-body">
-                                    <p class="mb-2"><strong>Purpose:</strong> Specific lone person household spending</p>
-                                    
-                                    <p class="mb-2"><strong>Use this for:</strong></p>
-                                    <ul class="mb-3">
-                                        <li>Most accurate single-person spending estimates</li>
-                                        <li>NDIS HEN (High Energy Needs) subsidy calculations</li>
-                                        <li>Applications requiring precise lone-person values</li>
-                                    </ul>
-                                    
-                                    <div class="alert alert-success mb-0">
-                                        <strong>Key advantage:</strong> Purpose-built for people living alone with age-stratified data showing 
-                                        variation across life stages
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Table 9.1 Detailed Methodology -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-success">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <span class="badge bg-success">Table 9.1</span>
-                        Non-Family Households (Lone Person) - Specific Analysis
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Data Source:</strong> HES 2015-16 Table 9.1 - Non-family households, Food and non-alcoholic beverages</p>
-                    
-                    <p><strong>Methodology:</strong></p>
-                    <ol>
-                        <li class="mb-2">
-                            <strong>Extract age-specific spending</strong><br>
-                            Table 9.1 provides weekly food expenditure for people living alone across four age groups:
-                            <div class="p-3 bg-light border rounded mt-2">
-                                <ul class="mb-0">
-                                    <li>Under 35 years: $122.48/week</li>
-                                    <li>35-54 years: $126.48/week</li>
-                                    <li>55-64 years: $104.99/week</li>
-                                    <li>65+ years: $87.49/week</li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="mb-2">
-                            <strong>Calculate average across all age groups</strong><br>
-                            <div class="p-3 bg-light border rounded mt-2">
-                                Average: <strong>$110.36/week (2015-16 dollars)</strong>
-                            </div>
-                        </li>
-                        <li class="mb-2">
-                            <strong>Apply food-specific CPI</strong><br>
-                            Inflate to 2025 dollars using food CPI (32% increase)
-                            <div class="p-3 bg-light border rounded mt-2">
-                                $110.36 × 1.32 = <strong>$145.67/week (2025 dollars)</strong>
-                            </div>
-                        </li>
-                        <li class="mb-2">
-                            <strong>Convert to monthly and daily</strong>
-                            <div class="p-3 bg-light border rounded mt-2">
-                                Monthly: $145.67 × 4.33 weeks = <strong>$630.75/month</strong><br>
-                                Daily: $145.67 ÷ 7 days = <strong>$20.81/day</strong>
-                            </div>
-                        </li>
-                    </ol>
-                    
-                    <div class="alert alert-success mb-0 mt-3">
-                        <strong>Result:</strong> Single person living alone: <strong>$631/month</strong> or <strong>$21/day</strong> (2025 dollars)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Comparison Table -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-table"></i> Table 3.4 vs Table 9.1 Comparison
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Characteristic</th>
-                                    <th class="text-center">Table 3.4<br><small class="text-muted">Household Composition</small></th>
-                                    <th class="text-center">Table 9.1<br><small class="text-muted">Non-Family Households</small></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Data Source</strong></td>
-                                    <td>HES Table 3.4 - "One person" household type</td>
-                                    <td>HES Table 9.1 - "Non-family households" (lone person)</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Base Value (2015-16)</strong></td>
-                                    <td class="text-center">$89.00/week</td>
-                                    <td class="text-center">$110.36/week</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>CPI Applied</strong></td>
-                                    <td class="text-center">31% (general CPI)</td>
-                                    <td class="text-center">32% (food-specific CPI)</td>
-                                </tr>
-                                <tr class="table-primary">
-                                    <td><strong>Result (2025)</strong></td>
-                                    <td class="text-center"><strong>$505/month</strong></td>
-                                    <td class="text-center"><strong>$631/month</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Difference</strong></td>
-                                    <td colspan="2" class="text-center">
-                                        <strong>$126/month (25% higher)</strong>
-                                        <br><small class="text-muted">Due to: (1) Higher base value in Table 9.1, (2) Food-specific vs general CPI</small>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="alert alert-info mb-0 mt-3">
-                        <strong><i class="bi bi-info-circle"></i> Recommendation:</strong>
-                        <ul class="mb-0">
-                            <li><strong>For comparative analysis:</strong> Use Table 3.4 to understand how spending varies by household composition</li>
-                            <li><strong>For single-person estimates:</strong> Use Table 9.1 for most accurate lone person household spending</li>
-                            <li><strong>For NDIS HEN subsidy:</strong> Use Table 9.1 as it better reflects costs faced by people living alone</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Age Variation -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-bar-chart"></i> Age Variation in Lone Person Spending (Table 9.1)
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p>
-                        Table 9.1 reveals that food spending for people living alone varies significantly by age:
-                    </p>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Age Group</th>
-                                    <th class="text-end">Weekly (2015-16)</th>
-                                    <th class="text-end">Weekly (2025)</th>
-                                    <th class="text-end">Monthly (2025)</th>
-                                    <th>Variation from Average</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Under 35 years</td>
-                                    <td class="text-end">$122.48</td>
-                                    <td class="text-end">$161.67</td>
-                                    <td class="text-end">$700</td>
-                                    <td><span class="badge bg-danger">+11% above</span></td>
-                                </tr>
-                                <tr>
-                                    <td>35-54 years</td>
-                                    <td class="text-end">$126.48</td>
-                                    <td class="text-end">$166.95</td>
-                                    <td class="text-end">$723</td>
-                                    <td><span class="badge bg-danger">+15% above</span></td>
-                                </tr>
-                                <tr class="table-success">
-                                    <td><strong>55-64 years</strong></td>
-                                    <td class="text-end"><strong>$104.99</strong></td>
-                                    <td class="text-end"><strong>$138.59</strong></td>
-                                    <td class="text-end"><strong>$600</strong></td>
-                                    <td><span class="badge bg-success">Close to average</span></td>
-                                </tr>
-                                <tr>
-                                    <td>65+ years</td>
-                                    <td class="text-end">$87.49</td>
-                                    <td class="text-end">$115.49</td>
-                                    <td class="text-end">$500</td>
-                                    <td><span class="badge bg-info">-21% below</span></td>
-                                </tr>
-                                <tr class="table-primary">
-                                    <td><strong>Average</strong></td>
-                                    <td class="text-end"><strong>$110.36</strong></td>
-                                    <td class="text-end"><strong>$145.67</strong></td>
-                                    <td class="text-end"><strong>$631</strong></td>
-                                    <td><span class="badge bg-primary">Baseline</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="alert alert-warning mb-0 mt-3">
-                        <strong><i class="bi bi-exclamation-triangle"></i> Implication for NDIS HEN:</strong>
-                        If most HEN participants fall into specific age brackets, consider using age-specific values 
-                        rather than the average. For instance, if primarily 35-54 year olds, $723/month may be more 
-                        appropriate than the $631 average.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Why the Difference Matters -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-warning">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-lightbulb text-warning"></i> Why Does the 25% Difference Matter?
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>The $126/month difference between methodologies has significant implications:</strong></p>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-4 mb-3">
-                            <div class="card border-primary h-100">
-                                <div class="card-body">
-                                    <h6 class="card-title text-primary">
-                                        <i class="bi bi-calculator"></i> For Policy Decisions
-                                    </h6>
-                                    <p class="small mb-0">
-                                        Setting NDIS HEN subsidies using Table 3.4 ($505/month) would understate 
-                                        actual costs by ~$125/month, potentially creating financial hardship for participants
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <div class="card border-success h-100">
-                                <div class="card-body">
-                                    <h6 class="card-title text-success">
-                                        <i class="bi bi-person-check"></i> For Participants
-                                    </h6>
-                                    <p class="small mb-0">
-                                        Living alone incurs genuine additional costs (~25% more per person) due to 
-                                        inability to bulk buy, share staples, or minimize waste - Table 9.1 captures this reality
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 mb-3">
-                            <div class="card border-info h-100">
-                                <div class="card-body">
-                                    <h6 class="card-title text-info">
-                                        <i class="bi bi-graph-up"></i> For Analysis
-                                    </h6>
-                                    <p class="small mb-0">
-                                        Understanding both values enriches analysis: Table 3.4 shows the policy 
-                                        context (economies of scale), Table 9.1 provides the accurate specific value
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Complementary Approaches -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card border-info">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-check-circle text-info"></i> How the Approaches Complement Each Other
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>These two methodologies work together to provide comprehensive understanding:</strong></p>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <h6 class="text-primary"><i class="bi bi-1-circle"></i> Table 3.4 tells us:</h6>
-                            <ul>
-                                <li>Living alone costs ~24% more per person than living with family</li>
-                                <li>Economies of scale are substantial in food spending</li>
-                                <li>Policy decisions affecting households need to account for composition</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <h6 class="text-success"><i class="bi bi-2-circle"></i> Table 9.1 tells us:</h6>
-                            <ul>
-                                <li>The actual cost for someone living alone is $631/month</li>
-                                <li>Spending varies 44% between youngest and oldest lone persons</li>
-                                <li>This is the appropriate baseline for HEN subsidy calculations</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="alert alert-info mb-0 mt-3">
-                        <strong>Combined insight:</strong> We know that people living alone pay ~$631/month (Table 9.1), 
-                        and if they could live with family, they'd save ~24% per person (Table 3.4 insight). However, 
-                        this isn't an option for most HEN participants, so the Table 9.1 value ($631/month) is the 
-                        appropriate policy benchmark.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CPI Methodology -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-up-arrow"></i> CPI Inflation Adjustment Methodology
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Why Different CPI Factors?</strong></p>
-                    
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <div class="border-start border-primary border-3 ps-3 mb-3">
-                                <h6 class="text-primary">Table 3.4: 31% General CPI</h6>
-                                <p class="small">
-                                    Uses all-items CPI increase from 2015-16 to 2024-25 (~31% per RBA calculator). 
-                                    Appropriate for comparative analysis across diverse household expenditure patterns.
-                                </p>
-                                <p class="small mb-0">
-                                    <strong>Source:</strong> RBA Inflation Calculator, all-items basket
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="border-start border-success border-3 ps-3 mb-3">
-                                <h6 class="text-success">Table 9.1: 32% Food-Specific CPI</h6>
-                                <p class="small">
-                                    Uses food and non-alcoholic beverages specific CPI, which ran higher than 
-                                    general CPI during 2022-2024 (6-8% food inflation vs 3-4% general inflation).
-                                </p>
-                                <p class="small mb-0">
-                                    <strong>Source:</strong> ABS Food CPI index (catalogue 6401.0), compounded quarterly increases
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="alert alert-secondary mb-0 mt-3">
-                        <strong>Why food-specific CPI is higher:</strong> Global food price pressures 2022-2024 (Ukraine conflict, supply chain disruptions), 
-                        higher energy costs affecting food production and transport, climate impacts on Australian agricultural production, and 
-                        food service labor cost increases.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- END NEW SECTION: DUAL METHODOLOGY -->
-
-    <!-- Data Quality Assessment -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-shield-check text-success"></i> Per-Person Data Quality Assessment
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Calculation Type</th>
-                                <th>Data Source</th>
-                                <th>Reliability</th>
-                                <th>Notes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Per-person by household type</strong></td>
-                                <td>Direct HES 2015-16 data</td>
-                                <td><span class="badge bg-success">High</span></td>
-                                <td>Direct survey measurements, CPI-adjusted</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Per-person by income quintile</strong></td>
-                                <td>HES household spending ÷ household size</td>
-                                <td><span class="badge bg-success">High</span></td>
-                                <td>Calculated from direct HES data</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Cross-tabulation matrix</strong></td>
-                                <td>Statistical model combining HES data</td>
-                                <td><span class="badge bg-warning">Medium</span></td>
-                                <td>Modeled estimates, not direct survey data</td>
-                            </tr>
-                            <tr>
-                                <td><strong>NDIS segments</strong></td>
-                                <td>HES + DSS payment demographics</td>
-                                <td><span class="badge bg-info">Medium-High</span></td>
-                                <td>Cross-referenced data sources</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Interpretation -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-lightbulb text-warning"></i> Interpretation & Limitations
-            </h2>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <div class="card h-100 border-success">
+            <div class="col-md-6 mb-3">
+              <div class="card h-100 border-success">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-check-circle"></i> What This Estimate IS</h5>
+                  <strong>Table 9.1: Non-Family Households</strong>
                 </div>
                 <div class="card-body">
-                    <ul class="mb-0">
-                        <li>A <strong>derived aggregate average</strong> (national total ÷ household count)</li>
-                        <li>Based on <strong>national accounts methodology</strong> (not household survey)</li>
-                        <li><strong>Seasonally adjusted</strong> to remove seasonal spending patterns</li>
-                        <li>In <strong>current prices</strong> (nominal dollars, not inflation-adjusted)</li>
-                        <li><strong>Transparent, defensible, and automatable</strong> methodology</li>
-                        <li>Suitable for <strong>policy communication and trend analysis</strong></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card h-100 border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0"><i class="bi bi-x-circle"></i> What This Estimate IS NOT</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li>A household survey <strong>mean, median, or distribution measure</strong></li>
-                        <li><strong>Representative</strong> of typical individual household spending</li>
-                        <li>A measure of <strong>spending inequality</strong> across households</li>
-                        <li><strong>Adjusted</strong> for household size or composition differences</li>
-                        <li>A <strong>real-time</strong> indicator (data has ~6-8 week lag)</li>
-                        <li>Reflective of <strong>state/territory or regional</strong> variation</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+                  <p class="mb-2">
+                    <strong>Purpose:</strong> Specific lone person household
+                    spending
+                  </p>
 
-    <!-- Key Limitations -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">
-                        <i class="bi bi-exclamation-triangle text-warning"></i> Key Limitations
-                    </h5>
+                  <p class="mb-2"><strong>Use this for:</strong></p>
+                  <ul class="mb-3">
+                    <li>Most accurate single-person spending estimates</li>
+                    <li>NDIS HEN (High Energy Needs) subsidy calculations</li>
+                    <li>Applications requiring precise lone-person values</li>
+                  </ul>
+
+                  <div class="alert alert-success mb-0">
+                    <strong>Key advantage:</strong> Purpose-built for people
+                    living alone with age-stratified data showing variation
+                    across life stages
+                  </div>
                 </div>
-                <div class="card-body">
-                    <ol>
-                        <li class="mb-2">
-                            <strong>Aggregate Average Only:</strong> Does not reflect the distribution of spending across 
-                            different household types, income levels, or family compositions. A single household may spend 
-                            significantly more or less than this average.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Household Count Approximation:</strong> Uses annual household projections with a step 
-                            function (same count for all months in a calendar year), introducing minor imprecision in 
-                            per-household calculations.
-                        </li>
-                        <li class="mb-2">
-                            <strong>ABS Data Revisions:</strong> Historical values may change due to seasonal adjustment 
-                            updates or benchmarking to annual National Accounts, affecting time series comparisons.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Publication Lag:</strong> MHSI data is typically released 6-8 weeks after the reference 
-                            month, limiting real-time analysis.
-                        </li>
-                        <li class="mb-2">
-                            <strong>National Level Only:</strong> Does not capture state/territory, regional, or 
-                            metropolitan/rural variations in spending patterns.
-                        </li>
-                        <li class="mb-0">
-                            <strong>Food Category Definition:</strong> Relies on ABS categorization (COICOP 01). 
-                            Boundary cases (e.g., some meal kits or prepared foods) may be classified differently than expected.
-                        </li>
-                    </ol>
-                </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Validation -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-clipboard-check text-success"></i> Validation & Sanity Checks
-            </h2>
+  <!-- Table 9.1 Detailed Methodology -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card border-success">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <span class="badge bg-success">Table 9.1</span>
+            Non-Family Households (Lone Person) - Specific Analysis
+          </h5>
         </div>
-    </div>
+        <div class="card-body">
+          <p>
+            <strong>Data Source:</strong> HES 2015-16 Table 9.1 - Non-family
+            households, Food and non-alcoholic beverages
+          </p>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <p><strong>The following checks are applied to ensure data quality:</strong></p>
-                    <ul>
-                        <li><strong>Unit Verification:</strong> Confirm AUD$ millions → AUD$ conversion (×1,000,000)</li>
-                        <li><strong>Series Type Check:</strong> Verify data is Seasonally Adjusted (not Original or Trend)</li>
-                        <li><strong>Price Basis Check:</strong> Confirm current prices (nominal)</li>
-                        <li><strong>Category Check:</strong> Verify Food (COICOP 01) category only</li>
-                        <li><strong>Geography Check:</strong> Australia national level</li>
-                        <li><strong>Household Count Range:</strong> ~10-11 million households reasonable for 2020s Australia</li>
-                        <li><strong>Per-Household Range:</strong> $800-1,200/month is expected range for grocery spending</li>
-                        <li><strong>Time Series Continuity:</strong> No missing months or unexpected gaps</li>
-                        <li><strong>Growth Rate Check:</strong> Year-over-year growth typically within -5% to +15% range</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+          <p><strong>Methodology:</strong></p>
+          <ol>
+            <li class="mb-2">
+              <strong>Extract age-specific spending</strong><br />
+              Table 9.1 provides weekly food expenditure for people living alone
+              across four age groups:
+              <div class="p-3 bg-light border rounded mt-2">
+                <ul class="mb-0">
+                  <li>Under 35 years: $122.48/week</li>
+                  <li>35-54 years: $126.48/week</li>
+                  <li>55-64 years: $104.99/week</li>
+                  <li>65+ years: $87.49/week</li>
+                </ul>
+              </div>
+            </li>
+            <li class="mb-2">
+              <strong>Calculate average across all age groups</strong><br />
+              <div class="p-3 bg-light border rounded mt-2">
+                Average: <strong>$110.36/week (2015-16 dollars)</strong>
+              </div>
+            </li>
+            <li class="mb-2">
+              <strong>Apply food-specific CPI</strong><br />
+              Inflate to 2025 dollars using food CPI (32% increase)
+              <div class="p-3 bg-light border rounded mt-2">
+                $110.36 × 1.32 = <strong>$145.67/week (2025 dollars)</strong>
+              </div>
+            </li>
+            <li class="mb-2">
+              <strong>Convert to monthly and daily</strong>
+              <div class="p-3 bg-light border rounded mt-2">
+                Monthly: $145.67 × 4.33 weeks = <strong>$630.75/month</strong
+                ><br />
+                Daily: $145.67 ÷ 7 days = <strong>$20.81/day</strong>
+              </div>
+            </li>
+          </ol>
 
-    <!-- Alternative Approaches -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-shuffle text-info"></i> Alternative Approaches Not Used
-            </h2>
+          <div class="alert alert-success mb-0 mt-3">
+            <strong>Result:</strong> Single person living alone:
+            <strong>$631/month</strong> or <strong>$21/day</strong> (2025
+            dollars)
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <p><strong>Household Expenditure Survey (HES):</strong></p>
-                    <p>
-                        The ABS conducts detailed Household Expenditure Surveys that provide median and distribution data 
-                        for household spending. However, HES is only conducted every 5-6 years, making it unsuitable for 
-                        monthly tracking. MHSI provides higher frequency at the cost of aggregate-only perspective.
-                    </p>
-                    
-                    <p><strong>Linear Interpolation for Household Counts:</strong></p>
-                    <p>
-                        Instead of an annual step function, household counts could be linearly interpolated between June 30 
-                        projection dates. This was not implemented as the additional complexity provides minimal improvement 
-                        in accuracy for the precision level required in policy communication contexts.
-                    </p>
-                    
-                    <p class="mb-0"><strong>CPI-Adjusted Real Values:</strong></p>
-                    <p class="mb-0">
-                        Current prices (nominal) were chosen over real (inflation-adjusted) values as they better represent 
-                        actual dollar amounts experienced by households and are more intuitive for policy communication. 
-                        Real values could be calculated using ABS CPI data if needed for economic analysis.
-                    </p>
-                </div>
-            </div>
+  <!-- Age Variation -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="bi bi-bar-chart"></i> Age Variation in Lone Person
+            Spending (Table 9.1)
+          </h5>
         </div>
-    </div>
+        <div class="card-body">
+          <p>
+            Table 9.1 reveals that food spending for people living alone varies
+            significantly by age:
+          </p>
 
-    <!-- Data Updates -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-arrow-clockwise"></i> Data Updates & Maintenance</h5>
-                </div>
-                <div class="card-body">
-                    <p><strong>Update Frequency:</strong></p>
-                    <ul>
-                        <li>MHSI data is released monthly, typically 6-8 weeks after the reference month</li>
-                        <li>This application can be updated monthly with the latest MHSI release</li>
-                        <li>Household projections are updated annually when new ABS projections are released</li>
-                    </ul>
-                    
-                    <p><strong>Data Sources to Monitor:</strong></p>
-                    <ul class="mb-0">
-                        <li>ABS MHSI releases: <a href="https://www.abs.gov.au/statistics/economy/finance/monthly-household-spending-indicator" target="_blank">abs.gov.au/statistics/economy/finance/monthly-household-spending-indicator</a></li>
-                        <li>ABS Data Explorer: <a href="https://dataexplorer.abs.gov.au" target="_blank">dataexplorer.abs.gov.au</a></li>
-                        <li>Household projections: <a href="https://www.abs.gov.au/statistics/people/population/household-and-family-projections-australia" target="_blank">abs.gov.au/.../household-and-family-projections-australia</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Age Group</th>
+                  <th class="text-end">Weekly (2015-16)</th>
+                  <th class="text-end">Weekly (2025)</th>
+                  <th class="text-end">Monthly (2025)</th>
+                  <th>Variation from Average</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Under 35 years</td>
+                  <td class="text-end">$122.48</td>
+                  <td class="text-end">$161.67</td>
+                  <td class="text-end">$700</td>
+                  <td><span class="badge bg-danger">+11% above</span></td>
+                </tr>
+                <tr>
+                  <td>35-54 years</td>
+                  <td class="text-end">$126.48</td>
+                  <td class="text-end">$166.95</td>
+                  <td class="text-end">$723</td>
+                  <td><span class="badge bg-danger">+15% above</span></td>
+                </tr>
+                <tr class="table-success">
+                  <td><strong>55-64 years</strong></td>
+                  <td class="text-end"><strong>$104.99</strong></td>
+                  <td class="text-end"><strong>$138.59</strong></td>
+                  <td class="text-end"><strong>$600</strong></td>
+                  <td>
+                    <span class="badge bg-success">Close to average</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>65+ years</td>
+                  <td class="text-end">$87.49</td>
+                  <td class="text-end">$115.49</td>
+                  <td class="text-end">$500</td>
+                  <td><span class="badge bg-info">-21% below</span></td>
+                </tr>
+                <tr class="table-primary">
+                  <td><strong>Average</strong></td>
+                  <td class="text-end"><strong>$110.36</strong></td>
+                  <td class="text-end"><strong>$145.67</strong></td>
+                  <td class="text-end"><strong>$631</strong></td>
+                  <td><span class="badge bg-primary">Baseline</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-    <!-- Contact -->
-    <div class="row">
-        <div class="col-12">
-            <div class="alert alert-secondary">
-                <h5 class="alert-heading"><i class="bi bi-envelope"></i> Questions or Feedback?</h5>
-                <p class="mb-0">
-                    For questions about this methodology or to report data issues, please contact the 
-                    NDIA Assistive Technology Markets team.
-                </p>
-            </div>
+          <div class="alert alert-warning mb-0 mt-3">
+            <strong
+              ><i class="bi bi-exclamation-triangle"></i> Implication for NDIS
+              HEN:</strong
+            >
+            If most HEN participants fall into specific age brackets, consider
+            using age-specific values rather than the average. For instance, if
+            primarily 35-54 year olds, $723/month may be more appropriate than
+            the $631 average.
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Data Quality Assessment -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="bi bi-shield-check text-success"></i> Per-Person Data
+            Quality Assessment
+          </h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-bordered mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Calculation Type</th>
+                <th>Data Source</th>
+                <th>Reliability</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Per-person by household type</strong></td>
+                <td>Direct HES 2015-16 data</td>
+                <td><span class="badge bg-success">High</span></td>
+                <td>Direct survey measurements, CPI-adjusted</td>
+              </tr>
+              <tr>
+                <td><strong>Per-person by income quintile</strong></td>
+                <td>HES household spending ÷ household size</td>
+                <td><span class="badge bg-success">High</span></td>
+                <td>Calculated from direct HES data</td>
+              </tr>
+              <tr>
+                <td><strong>Cross-tabulation matrix</strong></td>
+                <td>Statistical model combining HES data</td>
+                <td><span class="badge bg-warning">Medium</span></td>
+                <td>Modeled estimates, not direct survey data</td>
+              </tr>
+              <tr>
+                <td><strong>NDIS segments</strong></td>
+                <td>HES + DSS payment demographics</td>
+                <td><span class="badge bg-info">Medium-High</span></td>
+                <td>Cross-referenced data sources</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interpretation -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-lightbulb text-warning"></i> Interpretation &
+        Limitations
+      </h2>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <div class="card h-100 border-success">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-check-circle"></i> What This Estimate IS
+          </h5>
+        </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li>
+              A <strong>derived aggregate average</strong> (national total ÷
+              household count)
+            </li>
+            <li>
+              Based on <strong>national accounts methodology</strong> (not
+              household survey)
+            </li>
+            <li>
+              <strong>Seasonally adjusted</strong> to remove seasonal spending
+              patterns
+            </li>
+            <li>
+              In <strong>current prices</strong> (nominal dollars, not
+              inflation-adjusted)
+            </li>
+            <li>
+              <strong>Transparent, defensible, and automatable</strong>
+              methodology
+            </li>
+            <li>
+              Suitable for
+              <strong>policy communication and trend analysis</strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100 border-danger">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-x-circle"></i> What This Estimate IS NOT
+          </h5>
+        </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li>
+              A household survey
+              <strong>mean, median, or distribution measure</strong>
+            </li>
+            <li>
+              <strong>Representative</strong> of typical individual household
+              spending
+            </li>
+            <li>
+              A measure of <strong>spending inequality</strong> across
+              households
+            </li>
+            <li>
+              <strong>Adjusted</strong> for household size or composition
+              differences
+            </li>
+            <li>
+              A <strong>real-time</strong> indicator (data has ~6-8 week lag)
+            </li>
+            <li>
+              Reflective of
+              <strong>state/territory or regional</strong> variation
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Limitations -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="bi bi-exclamation-triangle text-warning"></i> Key
+            Limitations
+          </h5>
+        </div>
+        <div class="card-body">
+          <ol>
+            <li class="mb-2">
+              <strong>Aggregate Average Only:</strong> Does not reflect the
+              distribution of spending across different household types, income
+              levels, or family compositions. A single household may spend
+              significantly more or less than this average.
+            </li>
+            <li class="mb-2">
+              <strong>Household Count Approximation:</strong> Uses annual
+              household projections with a step function (same count for all
+              months in a calendar year), introducing minor imprecision in
+              per-household calculations.
+            </li>
+            <li class="mb-2">
+              <strong>ABS Data Revisions:</strong> Historical values may change
+              due to seasonal adjustment updates or benchmarking to annual
+              National Accounts, affecting time series comparisons.
+            </li>
+            <li class="mb-2">
+              <strong>Publication Lag:</strong> MHSI data is typically released
+              6-8 weeks after the reference month, limiting real-time analysis.
+            </li>
+            <li class="mb-2">
+              <strong>National Level Only:</strong> Does not capture
+              state/territory, regional, or metropolitan/rural variations in
+              spending patterns.
+            </li>
+            <li class="mb-0">
+              <strong>Food Category Definition:</strong> Relies on ABS
+              categorization (COICOP 01). Boundary cases (e.g., some meal kits
+              or prepared foods) may be classified differently than expected.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Validation -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-clipboard-check text-success"></i> Validation & Sanity
+        Checks
+      </h2>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <p>
+            <strong
+              >The following checks are applied to ensure data quality:</strong
+            >
+          </p>
+          <ul>
+            <li>
+              <strong>Unit Verification:</strong> Confirm AUD$ millions → AUD$
+              conversion (×1,000,000)
+            </li>
+            <li>
+              <strong>Series Type Check:</strong> Verify data is Seasonally
+              Adjusted (not Original or Trend)
+            </li>
+            <li>
+              <strong>Price Basis Check:</strong> Confirm current prices
+              (nominal)
+            </li>
+            <li>
+              <strong>Category Check:</strong> Verify Food (COICOP 01) category
+              only
+            </li>
+            <li><strong>Geography Check:</strong> Australia national level</li>
+            <li>
+              <strong>Household Count Range:</strong> ~10-11 million households
+              reasonable for 2020s Australia
+            </li>
+            <li>
+              <strong>Per-Household Range:</strong> $800-1,200/month is expected
+              range for grocery spending
+            </li>
+            <li>
+              <strong>Time Series Continuity:</strong> No missing months or
+              unexpected gaps
+            </li>
+            <li>
+              <strong>Growth Rate Check:</strong> Year-over-year growth
+              typically within -5% to +15% range
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alternative Approaches -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-shuffle text-info"></i> Alternative Approaches Not Used
+      </h2>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <p><strong>Household Expenditure Survey (HES):</strong></p>
+          <p>
+            The ABS conducts detailed Household Expenditure Surveys that provide
+            median and distribution data for household spending. However, HES is
+            only conducted every 5-6 years, making it unsuitable for monthly
+            tracking. MHSI provides higher frequency at the cost of
+            aggregate-only perspective.
+          </p>
+
+          <p><strong>Linear Interpolation for Household Counts:</strong></p>
+          <p>
+            Instead of an annual step function, household counts could be
+            linearly interpolated between June 30 projection dates. This was not
+            implemented as the additional complexity provides minimal
+            improvement in accuracy for the precision level required in policy
+            communication contexts.
+          </p>
+
+          <p class="mb-0"><strong>CPI-Adjusted Real Values:</strong></p>
+          <p class="mb-0">
+            Current prices (nominal) were chosen over real (inflation-adjusted)
+            values as they better represent actual dollar amounts experienced by
+            households and are more intuitive for policy communication. Real
+            values could be calculated using ABS CPI data if needed for economic
+            analysis.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Updates -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-arrow-clockwise"></i> Data Updates & Maintenance
+          </h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Update Frequency:</strong></p>
+          <ul>
+            <li>
+              MHSI data is released monthly, typically 6-8 weeks after the
+              reference month
+            </li>
+            <li>
+              This application can be updated monthly with the latest MHSI
+              release
+            </li>
+            <li>
+              Household projections are updated annually when new ABS
+              projections are released
+            </li>
+          </ul>
+
+          <p><strong>Data Sources to Monitor:</strong></p>
+          <ul class="mb-0">
+            <li>
+              ABS MHSI releases:
+              <a
+                href="https://www.abs.gov.au/statistics/economy/finance/monthly-household-spending-indicator"
+                target="_blank"
+                >abs.gov.au/statistics/economy/finance/monthly-household-spending-indicator</a
+              >
+            </li>
+            <li>
+              ABS Data Explorer:
+              <a href="https://dataexplorer.abs.gov.au" target="_blank"
+                >dataexplorer.abs.gov.au</a
+              >
+            </li>
+            <li>
+              Household projections:
+              <a
+                href="https://www.abs.gov.au/statistics/people/population/household-and-family-projections-australia"
+                target="_blank"
+                >abs.gov.au/.../household-and-family-projections-australia</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="row">
+    <div class="col-12">
+      <div class="alert alert-secondary">
+        <h5 class="alert-heading">
+          <i class="bi bi-envelope"></i> Questions or Feedback?
+        </h5>
+        <p class="mb-0">
+          For questions about this methodology or to report data issues, please
+          contact the NDIA Assistive Technology Markets team.
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
