@@ -242,7 +242,7 @@ Estimates{% endblock %} {% block content %}
             </li>
             <li>
               <strong>Income Quintile Data:</strong> Average household sizes
-              from HES 2015-16 Table 2.1
+              from HES 2015-16 Table 3.3A
             </li>
           </ul>
 
@@ -465,7 +465,7 @@ Estimates{% endblock %} {% block content %}
               household
             </li>
             <li>
-              Adjust to 2025 dollars using Food CPI (31% increase from 2015-16)
+              Adjust to February 2026 dollars using Food CPI (36% cumulative increase from 2015-16 to February 2026)
             </li>
           </ol>
 
@@ -473,11 +473,11 @@ Estimates{% endblock %} {% block content %}
           <div class="p-3 bg-light border rounded mb-3">
             <strong>Couple with children:</strong><br />
             • Household spending (2015-16): $278/week = $1,140/month<br />
-            • CPI adjustment to 2025: $1,140 × 1.31 = $1,493/month<br />
+            • CPI adjustment to 2026: $1,140 × 1.36 = $1,550/month<br />
             • Average household size: 4.1 persons<br />
             •
             <strong
-              >Per-person spending: $1,493 ÷ 4.1 = $364/person/month</strong
+              >Per-person spending: $1,550 ÷ 4.1 = $378/person/month</strong
             >
           </div>
 
@@ -517,7 +517,7 @@ Estimates{% endblock %} {% block content %}
               Divide: Per-person spending = Household spending ÷ Average
               household size
             </li>
-            <li>Adjust to 2025 dollars using Food CPI</li>
+            <li>Adjust to February 2026 dollars using Food CPI</li>
           </ol>
 
           <p><strong>Example Calculation (Quintile 1):</strong></p>
@@ -680,100 +680,6 @@ Estimates{% endblock %} {% block content %}
     </div>
   </div>
 
-  <!-- NEW SECTION: DUAL METHODOLOGY -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <h2 class="h3 mb-3">
-        <i class="bi bi-diagram-3 text-info"></i> Dual Methodology for Single
-        Person Spending
-      </h2>
-      <p class="text-muted">
-        Understanding the difference between Table 9.1 and Table 9.1 approaches
-      </p>
-    </div>
-  </div>
-
-  <!-- Why Two Approaches Card -->
-  <div class="row mb-3">
-    <div class="col-12">
-      <div class="card border-info">
-        <div class="card-header bg-light">
-          <h5 class="mb-0">
-            <i class="bi bi-question-circle text-info"></i> Why Two Different
-            Approaches?
-          </h5>
-        </div>
-        <div class="card-body">
-          <p>
-            This application uses
-            <strong>two complementary methodologies</strong> from the ABS
-            Household Expenditure Survey (HES) 2015-16, each serving different
-            analytical purposes:
-          </p>
-
-          <div class="row mt-3">
-            <div class="col-md-6 mb-3">
-              <div class="card h-100 border-primary">
-                <div class="card-header bg-primary text-white">
-                  <strong>Table 9.1: Household Composition</strong>
-                </div>
-                <div class="card-body">
-                  <p class="mb-2">
-                    <strong>Purpose:</strong> Comparative analysis across
-                    household types
-                  </p>
-
-                  <p class="mb-2"><strong>Use this for:</strong></p>
-                  <ul class="mb-3">
-                    <li>
-                      Understanding spending patterns across different household
-                      structures
-                    </li>
-                    <li>Demonstrating economies of scale</li>
-                    <li>Policy communication and distribution analysis</li>
-                  </ul>
-
-                  <div class="alert alert-primary mb-0">
-                    <strong>Key insight:</strong> Families save ~24% per person
-                    compared to living alone due to bulk buying, shared staples,
-                    and reduced waste
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 mb-3">
-              <div class="card h-100 border-success">
-                <div class="card-header bg-success text-white">
-                  <strong>Table 9.1: Non-Family Households</strong>
-                </div>
-                <div class="card-body">
-                  <p class="mb-2">
-                    <strong>Purpose:</strong> Specific lone person household
-                    spending
-                  </p>
-
-                  <p class="mb-2"><strong>Use this for:</strong></p>
-                  <ul class="mb-3">
-                    <li>Most accurate single-person spending estimates</li>
-                    <li>NDIS HEN (High Energy Needs) subsidy calculations</li>
-                    <li>Applications requiring precise lone-person values</li>
-                  </ul>
-
-                  <div class="alert alert-success mb-0">
-                    <strong>Key advantage:</strong> Purpose-built for people
-                    living alone with age-stratified data showing variation
-                    across life stages
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Table 9.1 Detailed Methodology -->
   <div class="row mb-3">
     <div class="col-12">
@@ -813,24 +719,24 @@ Estimates{% endblock %} {% block content %}
             </li>
             <li class="mb-2">
               <strong>Apply food-specific CPI</strong><br />
-              Inflate to 2025 dollars using food CPI (32% increase)
+              Inflate to February 2026 dollars using food CPI (36% cumulative increase from 2015-16 to February 2026)
               <div class="p-3 bg-light border rounded mt-2">
-                $110.36 × 1.32 = <strong>$145.67/week (2025 dollars)</strong>
+                $110.36 × 1.36 = <strong>$150.09/week (February 2026 dollars)</strong>
               </div>
             </li>
             <li class="mb-2">
               <strong>Convert to monthly and daily</strong>
               <div class="p-3 bg-light border rounded mt-2">
-                Monthly: $145.67 × 4.33 weeks = <strong>$630.75/month</strong
+                Monthly: $150.09 × 4.33 weeks = <strong>$649.89/month</strong
                 ><br />
-                Daily: $145.67 ÷ 7 days = <strong>$20.81/day</strong>
+                Daily: $150.09 ÷ 7 days = <strong>$21.44/day</strong>
               </div>
             </li>
           </ol>
 
           <div class="alert alert-success mb-0 mt-3">
             <strong>Result:</strong> Single person living alone:
-            <strong>$631/month</strong> or <strong>$21/day</strong> (2025
+            <strong>$650/month</strong> or <strong>$21.44/day</strong> (February 2026
             dollars)
           </div>
         </div>
@@ -899,8 +805,8 @@ Estimates{% endblock %} {% block content %}
                 <tr class="table-primary">
                   <td><strong>Average</strong></td>
                   <td class="text-end"><strong>$110.36</strong></td>
-                  <td class="text-end"><strong>$145.67</strong></td>
-                  <td class="text-end"><strong>$631</strong></td>
+                  <td class="text-end"><strong>$150.09</strong></td>
+                  <td class="text-end"><strong>$650</strong></td>
                   <td><span class="badge bg-primary">Baseline</span></td>
                 </tr>
               </tbody>
@@ -915,7 +821,7 @@ Estimates{% endblock %} {% block content %}
             If most HEN participants fall into specific age brackets, consider
             using age-specific values rather than the average. For instance, if
             primarily 35-54 year olds, $723/month may be more appropriate than
-            the $631 average.
+            the $650 average.
           </div>
         </div>
       </div>

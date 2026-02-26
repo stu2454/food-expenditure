@@ -7,7 +7,7 @@ import pandas as pd
 from typing import Dict, Any, List
 
 CPI_ADJUSTMENT_FACTOR = 1.31
-CPI_ADJUSTMENT_FACTOR_FOOD = 1.32
+CPI_ADJUSTMENT_FACTOR_FOOD = 1.36
 
 QUINTILE_ANNUAL_INCOME_2025 = {
     'Quintile 1 (Lowest)': 38000,
@@ -157,7 +157,7 @@ def get_distribution_summary() -> Dict[str, Any]:
     highest = float(quintile_df.iloc[-1]['monthly_2025'])
     
     return {
-        'cpi_adjustment': '32% food-specific CPI (2015-16 to 2025)',
+        'cpi_adjustment': '36% food-specific CPI (2015-16 to February 2026)',
         'quintile_range': {
             'lowest': lowest,
             'highest': highest,

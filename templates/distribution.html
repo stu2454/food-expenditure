@@ -1,1102 +1,1274 @@
-{% extends "base.html" %}
-
-{% block title %}Distribution Analysis - Household Spending Estimates{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Distribution Analysis - Household
+Spending Estimates{% endblock %} {% block content %}
 <div class="container">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-5">
-                <i class="bi bi-bar-chart text-primary"></i>
-                Spending Distribution Analysis
-            </h1>
-            <p class="lead text-muted">
-                How grocery spending varies by income level and household type
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5">
+        <i class="bi bi-bar-chart text-primary"></i>
+        Spending Distribution Analysis
+      </h1>
+      <p class="lead text-muted">
+        How grocery spending varies by income level and household type
+      </p>
+    </div>
+  </div>
+
+  <!-- Data Source Warning -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="alert alert-warning border-warning">
+        <h5 class="alert-heading">
+          <i class="bi bi-exclamation-triangle"></i> Important: Data Source &
+          Currency
+        </h5>
+        <p class="mb-2">
+          <strong
+            >This page uses ABS Household Expenditure Survey (HES) data from
+            2015-16</strong
+          >, the most recent comprehensive household-level expenditure data
+          available. All dollar values have been adjusted for inflation using
+          Food CPI to represent estimated 2025 dollars.
+        </p>
+        <p class="mb-0">
+          <strong>Adjustment:</strong> {{ summary.cpi_adjustment }} applied to
+          convert 2015-16 dollars to 2026 equivalents.<br />
+          <strong>Next Survey:</strong> ABS HES 2023-24 data expected late
+          2025/early 2026.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card border-primary h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-arrow-down-circle"></i> Lowest Quintile
+          </h6>
+          <h3 class="card-title text-primary mb-1">
+            ${{ "%.0f"|format(summary.quintile_range.lowest) }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">per month</small>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-success h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-arrow-up-circle"></i> Highest Quintile
+          </h6>
+          <h3 class="card-title text-success mb-1">
+            ${{ "%.0f"|format(summary.quintile_range.highest) }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">per month</small>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-info h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-arrows-expand"></i> Range
+          </h6>
+          <h3 class="card-title text-info mb-1">
+            ${{ "%.0f"|format(summary.quintile_range.difference) }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">difference</small>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-warning h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-percent"></i> Ratio
+          </h6>
+          <h3 class="card-title text-warning mb-1">
+            {{ summary.quintile_range.ratio }}x
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">high/low</small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Income Quintiles Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-cash-stack text-primary"></i> Spending by Income Level
+      </h2>
+    </div>
+  </div>
+
+  <!-- Quintile Charts -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Monthly Grocery Spending by Income Quintile</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="quintileSpendingChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Proportion of Income Spent on Groceries</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="proportionChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quintile Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Income Quintile Details</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Income Quintile</th>
+                  <th>Household Income Range</th>
+                  <th class="text-end">
+                    Monthly Spending<br /><small class="text-muted"
+                      >(2025 $)</small
+                    >
+                  </th>
+                  <th class="text-end">% of Income</th>
+                  <th>Characteristics</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in quintile_data %}
+                <tr>
+                  <td><strong>{{ row.quintile }}</strong></td>
+                  <td>{{ row.income_range }}</td>
+                  <td class="text-end">
+                    <strong>${{ "%.0f"|format(row.monthly_2025) }}</strong>
+                  </td>
+                  <td class="text-end">
+                    {{ "%.1f"|format(row.proportion_income) }}%
+                  </td>
+                  <td><small>{{ row.characteristics }}</small></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Household Type Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-people-fill text-primary"></i> Spending by Household
+        Type
+      </h2>
+    </div>
+  </div>
+
+  <!-- Household Charts -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Total Monthly Spending by Household Type</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="householdTotalChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Per-Person Monthly Spending</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="householdPerPersonChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Household Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Household Type Details</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Household Type</th>
+                  <th class="text-center">Avg Persons</th>
+                  <th class="text-end">
+                    Monthly Spending<br /><small class="text-muted"
+                      >(2025 $)</small
+                    >
+                  </th>
+                  <th class="text-end">
+                    Per Person<br /><small class="text-muted">(2025 $)</small>
+                  </th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in household_data %}
+                <tr>
+                  <td><strong>{{ row.household_type }}</strong></td>
+                  <td class="text-center">
+                    {{ "%.1f"|format(row.avg_persons) }}
+                  </td>
+                  <td class="text-end">
+                    <strong>${{ "%.0f"|format(row.monthly_2025) }}</strong>
+                  </td>
+                  <td class="text-end">
+                    ${{ "%.0f"|format(row.per_person_monthly_2025) }}
+                  </td>
+                  <td><small>{{ row.note }}</small></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TABLE 9.1 LONE PERSON ANALYSIS SECTION -->
+  <!-- ============================================================ -->
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3>
+        <i class="bi bi-person-circle text-success"></i>
+        Lone Person Household Analysis (Table 9.1)
+      </h3>
+      <p class="text-muted">
+        More accurate spending estimates for people living alone, with
+        age-specific breakdown
+      </p>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-success">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-table"></i> Non-Family Households - Food Spending by
+            Age
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info mb-3">
+            <strong><i class="bi bi-info-circle"></i> Data Source:</strong> HES
+            2015-16 Table 9.1 - Purpose-built for people living alone<br />
+            <strong>CPI Applied:</strong> 36% (food-specific CPI, 2015-16 to
+            2025)<br />
+            <strong>Use this for:</strong> NDIS HEN subsidy calculations, most
+            accurate single-person estimates
+          </div>
+
+          {% if lone_person_data and lone_person_summary %}
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Age Group</th>
+                  <th class="text-end">Weekly (2015-16)</th>
+                  <th class="text-end">Weekly (2025)</th>
+                  <th class="text-end">Monthly (2025)</th>
+                  <th class="text-end">Daily (2025)</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in lone_person_data %}
+                <tr>
+                  <td><strong>{{ row.age_group }}</strong></td>
+                  <td class="text-end">
+                    ${{ "%.2f"|format(row.weekly_2016) }}
+                  </td>
+                  <td class="text-end">
+                    ${{ "%.2f"|format(row.weekly_2025) }}
+                  </td>
+                  <td class="text-end">
+                    <strong>${{ "%.0f"|format(row.monthly_2025) }}</strong>
+                  </td>
+                  <td class="text-end">${{ "%.2f"|format(row.daily_2025) }}</td>
+                  <td><small class="text-muted">{{ row.note }}</small></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot class="table-primary">
+                <tr>
+                  <td><strong>Average (All Ages)</strong></td>
+                  <td class="text-end">
+                    <strong
+                      >${{
+                      "%.2f"|format(lone_person_summary.average_across_ages.weekly_2016)
+                      }}</strong
+                    >
+                  </td>
+                  <td class="text-end">
+                    <strong
+                      >${{
+                      "%.2f"|format(lone_person_summary.average_across_ages.weekly_2025)
+                      }}</strong
+                    >
+                  </td>
+                  <td class="text-end">
+                    <strong
+                      >${{
+                      "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025)
+                      }}</strong
+                    >
+                  </td>
+                  <td class="text-end">
+                    <strong
+                      >${{
+                      "%.2f"|format(lone_person_summary.average_across_ages.daily_2025)
+                      }}</strong
+                    >
+                  </td>
+                  <td><small>Recommended for HEN subsidy</small></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-md-4">
+              <div class="card border-success h-100">
+                <div class="card-body text-center">
+                  <h6 class="text-success">
+                    <i class="bi bi-check-circle"></i> Recommended Value
+                  </h6>
+                  <h2 class="text-success mb-0">
+                    ${{
+                    "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025)
+                    }}
+                  </h2>
+                  <p class="text-muted mb-0">per month</p>
+                  <hr />
+                  <p class="mb-0">
+                    <strong
+                      >${{
+                      "%.2f"|format(lone_person_summary.average_across_ages.daily_2025)
+                      }}</strong
+                    >
+                    per day
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="card border-info h-100">
+                <div class="card-body">
+                  <h6 class="text-info">
+                    <i class="bi bi-bar-chart"></i> Age Variation
+                  </h6>
+                  <p class="small mb-2">Spending varies by age group:</p>
+                  <table class="table table-sm mb-0">
+                    <tr>
+                      <td><small>Highest (35-54):</small></td>
+                      <td class="text-end">
+                        <small
+                          ><strong
+                            >${{
+                            "%.0f"|format(lone_person_summary.age_range.highest.monthly_2025)
+                            }}</strong
+                          ></small
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><small>Lowest (65+):</small></td>
+                      <td class="text-end">
+                        <small
+                          ><strong
+                            >${{
+                            "%.0f"|format(lone_person_summary.age_range.lowest.monthly_2025)
+                            }}</strong
+                          ></small
+                        >
+                      </td>
+                    </tr>
+                    <tr class="table-info">
+                      <td>
+                        <small><strong>Range:</strong></small>
+                      </td>
+                      <td class="text-end">
+                        <small><strong>44% variation</strong></small>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-success mt-3 mb-0">
+            <h6 class="alert-heading">
+              <i class="bi bi-lightbulb"></i> Why Use Table 9.1 for NDIS HEN?
+            </h6>
+            <ul class="mb-0">
+              <li>
+                <strong>Purpose-built:</strong> Specifically designed for people
+                living alone
+              </li>
+              <li>
+                <strong>Age-specific:</strong> Shows variation across life
+                stages (44% range)
+              </li>
+              <li>
+                <strong>Food-specific CPI:</strong> Uses actual food inflation
+                (36%), not general CPI (31%)
+              </li>
+              <li>
+                <strong>Higher accuracy:</strong> Captures true costs without
+                economies of scale
+              </li>
+              <li>
+                <strong>25% higher than Table 3.4:</strong> Reflects reality
+                that living alone costs more
+              </li>
+            </ul>
+          </div>
+
+          {% else %}
+          <div class="alert alert-danger">
+            <h5 class="alert-heading">
+              <i class="bi bi-exclamation-triangle"></i> Table 9.1 Data Not
+              Available
+            </h5>
+            <p class="mb-0">
+              The Table 9.1 lone person data is not being passed to this
+              template. Please ensure <code>hes_data.py</code> and
+              <code>app.py</code> are updated with the new functions.
             </p>
+          </div>
+          {% endif %}
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- END TABLE 9.1 SECTION -->
+  <!-- ============================================================ -->
+
+  <!-- PER-PERSON ANALYSIS SECTION (NEW!) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-person-circle text-success"></i> Individual (Per-Person)
+        Spending Analysis
+      </h2>
+      <p class="text-muted">
+        Understanding grocery spending on a
+        <strong>per-person basis</strong> reveals the impact of household size
+        and economies of scale.
+      </p>
+    </div>
+  </div>
+
+  <!-- Per-Person Summary Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card border-success h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-person"></i> Living Alone
+          </h6>
+          <h3 class="card-title text-success mb-1">
+            ${{ "%.0f"|format(per_person_summary.per_person_by_household.single)
+            }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">per person/month</small>
+          </p>
+        </div>
+      </div>
     </div>
 
-    <!-- Data Source Warning -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="alert alert-warning border-warning">
-                <h5 class="alert-heading">
-                    <i class="bi bi-exclamation-triangle"></i> Important: Data Source & Currency
-                </h5>
-                <p class="mb-2">
-                    <strong>This page uses ABS Household Expenditure Survey (HES) data from 2015-16</strong>, 
-                    the most recent comprehensive household-level expenditure data available. All dollar values 
-                    have been adjusted for inflation using Food CPI to represent estimated 2025 dollars.
-                </p>
-                <p class="mb-0">
-                    <strong>Adjustment:</strong> {{ summary.cpi_adjustment }} applied to convert 2015-16 dollars to 2025 equivalents.<br>
-                    <strong>Next Survey:</strong> ABS HES 2023-24 data expected late 2025/early 2026.
-                </p>
-            </div>
+    <div class="col-md-3">
+      <div class="card border-info h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-people"></i> Families
+          </h6>
+          <h3 class="card-title text-info mb-1">
+            ${{ "%.0f"|format(per_person_summary.per_person_by_household.family)
+            }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">per person/month</small>
+          </p>
         </div>
+      </div>
     </div>
 
-    <!-- Summary Stats -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-primary h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-arrow-down-circle"></i> Lowest Quintile
-                    </h6>
-                    <h3 class="card-title text-primary mb-1">
-                        ${{ "%.0f"|format(summary.quintile_range.lowest) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">per month</small>
-                    </p>
-                </div>
-            </div>
+    <div class="col-md-3">
+      <div class="card border-warning h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-percent"></i> Economies of Scale
+          </h6>
+          <h3 class="card-title text-warning mb-1">
+            {{ "%.0f"|format(per_person_summary.economies_of_scale.savings_pct)
+            }}%
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">savings in families</small>
+          </p>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-success h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-arrow-up-circle"></i> Highest Quintile
-                    </h6>
-                    <h3 class="card-title text-success mb-1">
-                        ${{ "%.0f"|format(summary.quintile_range.highest) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">per month</small>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-info h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-arrows-expand"></i> Range
-                    </h6>
-                    <h3 class="card-title text-info mb-1">
-                        ${{ "%.0f"|format(summary.quintile_range.difference) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">difference</small>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-warning h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-percent"></i> Ratio
-                    </h6>
-                    <h3 class="card-title text-warning mb-1">
-                        {{ summary.quintile_range.ratio }}x
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">high/low</small>
-                    </p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Income Quintiles Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-cash-stack text-primary"></i> Spending by Income Level
-            </h2>
+    <div class="col-md-3">
+      <div class="card border-danger h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">
+            <i class="bi bi-heart"></i> Single Parents
+          </h6>
+          <h3 class="card-title text-danger mb-1">
+            ${{
+            "%.0f"|format(per_person_summary.per_person_by_household.single_parent)
+            }}
+          </h3>
+          <p class="card-text">
+            <small class="text-muted">per person/month</small>
+          </p>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Quintile Charts -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Monthly Grocery Spending by Income Quintile</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="quintileSpendingChart" height="300"></canvas>
-                </div>
-            </div>
+  <!-- Per-Person Comparison Charts -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Per-Person vs Per-Household (Income)</h5>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Proportion of Income Spent on Groceries</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="proportionChart" height="300"></canvas>
-                </div>
-            </div>
+        <div class="card-body">
+          <canvas id="perPersonIncomeChart" height="300"></canvas>
         </div>
+      </div>
     </div>
-
-    <!-- Quintile Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Income Quintile Details</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Income Quintile</th>
-                                    <th>Household Income Range</th>
-                                    <th class="text-end">Monthly Spending<br><small class="text-muted">(2025 $)</small></th>
-                                    <th class="text-end">% of Income</th>
-                                    <th>Characteristics</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in quintile_data %}
-                                <tr>
-                                    <td><strong>{{ row.quintile }}</strong></td>
-                                    <td>{{ row.income_range }}</td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(row.monthly_2025) }}</strong></td>
-                                    <td class="text-end">{{ "%.1f"|format(row.proportion_income) }}%</td>
-                                    <td><small>{{ row.characteristics }}</small></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Per-Person vs Per-Household (Household Type)</h5>
         </div>
+        <div class="card-body">
+          <canvas id="perPersonHouseholdChart" height="300"></canvas>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Household Type Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-people-fill text-primary"></i> Spending by Household Type
-            </h2>
+  <!-- Per-Person by Income Quintile Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Per-Person Spending by Income Level</h5>
         </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Income Quintile</th>
+                  <th class="text-center">Avg Household Size</th>
+                  <th class="text-end">
+                    Per-Household<br /><small class="text-muted"
+                      >(2025 $)</small
+                    >
+                  </th>
+                  <th class="text-end">
+                    Per-Person<br /><small class="text-muted">(2025 $)</small>
+                  </th>
+                  <th>Insight</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in quintile_data %}
+                <tr>
+                  <td><strong>{{ row.quintile }}</strong></td>
+                  <td class="text-center">
+                    {{ "%.1f"|format(row.avg_household_size) }}
+                  </td>
+                  <td class="text-end">
+                    ${{ "%.0f"|format(row.monthly_2025) }}
+                  </td>
+                  <td class="text-end">
+                    <strong
+                      >${{ "%.0f"|format(row.per_person_monthly_2025) }}</strong
+                    >
+                  </td>
+                  <td>
+                    <small>
+                      {% if loop.index == 1 %} Smallest households, highest
+                      per-person cost {% elif loop.index == 2 %} Mix of singles
+                      and small families {% elif loop.index == 3 %} Middle-sized
+                      households {% elif loop.index == 4 %} Larger households,
+                      moderate per-person {% else %} Largest households,
+                      economies of scale {% endif %}
+                    </small>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Household Charts -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Total Monthly Spending by Household Type</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="householdTotalChart" height="300"></canvas>
-                </div>
-            </div>
+  <!-- Cross-Tabulation Matrix -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-grid-3x3"></i> Per-Person Spending Matrix: Income ×
+            Household Type
+          </h5>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Per-Person Monthly Spending</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="householdPerPersonChart" height="300"></canvas>
-                </div>
-            </div>
+        <div class="card-body">
+          <p class="mb-3">
+            <strong>Estimated monthly per-person grocery spending</strong> by
+            income level and household composition (2025 dollars). These values
+            combine direct HES data with statistical modeling.
+          </p>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Household Type</th>
+                  <th class="text-center bg-light">
+                    Quintile 1<br /><small>(Lowest)</small>
+                  </th>
+                  <th class="text-center">Quintile 2</th>
+                  <th class="text-center bg-light">
+                    Quintile 3<br /><small>(Middle)</small>
+                  </th>
+                  <th class="text-center">Quintile 4</th>
+                  <th class="text-center bg-light">
+                    Quintile 5<br /><small>(Highest)</small>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in cross_tab_matrix %}
+                <tr>
+                  <td><strong>{{ row['Household Type'] }}</strong></td>
+                  <td class="text-center bg-light">
+                    {{ row['Quintile 1'] }}/person
+                  </td>
+                  <td class="text-center">{{ row['Quintile 2'] }}/person</td>
+                  <td class="text-center bg-light">
+                    {{ row['Quintile 3'] }}/person
+                  </td>
+                  <td class="text-center">{{ row['Quintile 4'] }}/person</td>
+                  <td class="text-center bg-light">
+                    {{ row['Quintile 5'] }}/person
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="alert alert-warning mt-3 mb-0">
+            <small>
+              <strong>Methodology Note:</strong> Matrix values are modeled
+              estimates combining household type averages with income-based
+              adjustments. Individual households within each cell may vary
+              significantly. Use these as general guidance ranges, not precise
+              predictions.
+            </small>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Household Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Household Type Details</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Household Type</th>
-                                    <th class="text-center">Avg Persons</th>
-                                    <th class="text-end">Monthly Spending<br><small class="text-muted">(2025 $)</small></th>
-                                    <th class="text-end">Per Person<br><small class="text-muted">(2025 $)</small></th>
-                                    <th>Note</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in household_data %}
-                                <tr>
-                                    <td><strong>{{ row.household_type }}</strong></td>
-                                    <td class="text-center">{{ "%.1f"|format(row.avg_persons) }}</td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(row.monthly_2025) }}</strong></td>
-                                    <td class="text-end">${{ "%.0f"|format(row.per_person_monthly_2025) }}</td>
-                                    <td><small>{{ row.note }}</small></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+  <!-- Per-Person Key Insights -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-success">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-lightbulb"></i> Key Per-Person Insights
+          </h5>
         </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li class="mb-2">
+              <strong>Household Size Matters Most:</strong> Per-person spending
+              varies more by household composition ($282-$478/person) than by
+              income level (~$450-$501/person across quintiles).
+            </li>
+            <li class="mb-2">
+              <strong>Economies of Scale:</strong> Living alone costs
+              approximately {{
+              "%.0f"|format(per_person_summary.economies_of_scale.savings_pct)
+              }}% more per person than living in a family household due to bulk
+              buying, sharing staples, and reduced waste.
+            </li>
+            <li class="mb-2">
+              <strong>Single Parents Face Double Challenge:</strong> Single
+              parent households have the lowest per-person spending (${{
+              "%.0f"|format(per_person_summary.per_person_by_household.single_parent)
+              }}/person), reflecting both budget constraints AND economies of
+              scale from larger household size.
+            </li>
+            <li class="mb-2">
+              <strong>Income Effect is Moderate:</strong> Higher-income
+              households spend slightly more per person (~$501 vs $474/person),
+              but the difference is much smaller than the household size effect.
+              This suggests food budgets are relatively inflexible.
+            </li>
+            <li class="mb-0">
+              <strong>Practical Implication for NDIS:</strong> When assessing
+              adequate NDIS support for food expenses, household composition
+              matters as much as income level. A single NDIS participant living
+              alone needs ~$478/month, while one in a family household needs
+              ~$364/month.
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
+  </div>
 
-
-    <!-- ============================================================ -->
-    <!-- TABLE 9.1 LONE PERSON ANALYSIS SECTION -->
-    <!-- ============================================================ -->
-    
-    <div class="row mb-4">
-        <div class="col-12">
-            <h3>
-                <i class="bi bi-person-circle text-success"></i>
-                Lone Person Household Analysis (Table 9.1)
-            </h3>
-            <p class="text-muted">
-                More accurate spending estimates for people living alone, with age-specific breakdown
-            </p>
-        </div>
+  <!-- NDIS Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="h3 mb-3">
+        <i class="bi bi-heart-pulse text-primary"></i> NDIS-Specific Analysis
+      </h2>
+      <p class="text-muted">
+        Grocery spending estimates for households with NDIS participants and DSP
+        recipients
+      </p>
     </div>
+  </div>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-table"></i> Non-Family Households - Food Spending by Age
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info mb-3">
-                        <strong><i class="bi bi-info-circle"></i> Data Source:</strong> HES 2015-16 Table 9.1 - Purpose-built for people living alone<br>
-                        <strong>CPI Applied:</strong> 32% (food-specific CPI, 2015-16 to 2025)<br>
-                        <strong>Use this for:</strong> NDIS HEN subsidy calculations, most accurate single-person estimates
-                    </div>
-                    
-                    {% if lone_person_data and lone_person_summary %}
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Age Group</th>
-                                    <th class="text-end">Weekly (2015-16)</th>
-                                    <th class="text-end">Weekly (2025)</th>
-                                    <th class="text-end">Monthly (2025)</th>
-                                    <th class="text-end">Daily (2025)</th>
-                                    <th>Note</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in lone_person_data %}
-                                <tr>
-                                    <td><strong>{{ row.age_group }}</strong></td>
-                                    <td class="text-end">${{ "%.2f"|format(row.weekly_2016) }}</td>
-                                    <td class="text-end">${{ "%.2f"|format(row.weekly_2025) }}</td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(row.monthly_2025) }}</strong></td>
-                                    <td class="text-end">${{ "%.2f"|format(row.daily_2025) }}</td>
-                                    <td><small class="text-muted">{{ row.note }}</small></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot class="table-primary">
-                                <tr>
-                                    <td><strong>Average (All Ages)</strong></td>
-                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.weekly_2016) }}</strong></td>
-                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.weekly_2025) }}</strong></td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}</strong></td>
-                                    <td class="text-end"><strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.daily_2025) }}</strong></td>
-                                    <td><small>Recommended for HEN subsidy</small></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    
-                    <div class="row mt-4">
-                        <div class="col-md-4">
-                            <div class="card border-success h-100">
-                                <div class="card-body text-center">
-                                    <h6 class="text-success">
-                                        <i class="bi bi-check-circle"></i> Recommended Value
-                                    </h6>
-                                    <h2 class="text-success mb-0">
-                                        ${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}
-                                    </h2>
-                                    <p class="text-muted mb-0">per month</p>
-                                    <hr>
-                                    <p class="mb-0">
-                                        <strong>${{ "%.2f"|format(lone_person_summary.average_across_ages.daily_2025) }}</strong> per day
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <div class="card border-warning h-100">
-                                <div class="card-body">
-                                    <h6 class="text-warning">
-                                        <i class="bi bi-exclamation-triangle"></i> Comparison to Table 3.4
-                                    </h6>
-                                    <table class="table table-sm mb-0">
-                                        <tr>
-                                            <td>Table 3.4 "One person":</td>
-                                            <td class="text-end"><strong>$505/month</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Table 9.1 Average:</td>
-                                            <td class="text-end"><strong>${{ "%.0f"|format(lone_person_summary.average_across_ages.monthly_2025) }}/month</strong></td>
-                                        </tr>
-                                        <tr class="table-warning">
-                                            <td><strong>Difference:</strong></td>
-                                            <td class="text-end"><strong>+$126 (25%)</strong></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <div class="card border-info h-100">
-                                <div class="card-body">
-                                    <h6 class="text-info">
-                                        <i class="bi bi-bar-chart"></i> Age Variation
-                                    </h6>
-                                    <p class="small mb-2">Spending varies by age group:</p>
-                                    <table class="table table-sm mb-0">
-                                        <tr>
-                                            <td><small>Highest (35-54):</small></td>
-                                            <td class="text-end"><small><strong>${{ "%.0f"|format(lone_person_summary.age_range.highest.monthly_2025) }}</strong></small></td>
-                                        </tr>
-                                        <tr>
-                                            <td><small>Lowest (65+):</small></td>
-                                            <td class="text-end"><small><strong>${{ "%.0f"|format(lone_person_summary.age_range.lowest.monthly_2025) }}</strong></small></td>
-                                        </tr>
-                                        <tr class="table-info">
-                                            <td><small><strong>Range:</strong></small></td>
-                                            <td class="text-end"><small><strong>44% variation</strong></small></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="alert alert-success mt-3 mb-0">
-                        <h6 class="alert-heading">
-                            <i class="bi bi-lightbulb"></i> Why Use Table 9.1 for NDIS HEN?
-                        </h6>
-                        <ul class="mb-0">
-                            <li><strong>Purpose-built:</strong> Specifically designed for people living alone</li>
-                            <li><strong>Age-specific:</strong> Shows variation across life stages (44% range)</li>
-                            <li><strong>Food-specific CPI:</strong> Uses actual food inflation (32%), not general CPI (31%)</li>
-                            <li><strong>Higher accuracy:</strong> Captures true costs without economies of scale</li>
-                            <li><strong>25% higher than Table 3.4:</strong> Reflects reality that living alone costs more</li>
-                        </ul>
-                    </div>
-                    
-                    {% else %}
-                    <div class="alert alert-danger">
-                        <h5 class="alert-heading">
-                            <i class="bi bi-exclamation-triangle"></i> Table 9.1 Data Not Available
-                        </h5>
-                        <p class="mb-0">
-                            The Table 9.1 lone person data is not being passed to this template. 
-                            Please ensure <code>hes_data.py</code> and <code>app.py</code> are updated with the new functions.
-                        </p>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+  <!-- NDIS Chart -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">Monthly Spending by NDIS Household Segment</h5>
         </div>
+        <div class="card-body">
+          <canvas id="ndisChart" height="250"></canvas>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- ============================================================ -->
-    <!-- END TABLE 9.1 SECTION -->
-    <!-- ============================================================ -->
-
-    <!-- PER-PERSON ANALYSIS SECTION (NEW!) -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-person-circle text-success"></i> Individual (Per-Person) Spending Analysis
-            </h2>
-            <p class="text-muted">
-                Understanding grocery spending on a <strong>per-person basis</strong> reveals the impact of household size and economies of scale.
-            </p>
+  <!-- NDIS Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">NDIS Segment Details</h5>
         </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Household Segment</th>
+                  <th>Household Income Range</th>
+                  <th>Income Quintile</th>
+                  <th class="text-end">
+                    Monthly Spending<br /><small class="text-muted"
+                      >(2025 $)</small
+                    >
+                  </th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in ndis_data %}
+                <tr>
+                  <td><strong>{{ row.segment }}</strong></td>
+                  <td>{{ row.income_range }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ row.quintile }}</span>
+                  </td>
+                  <td class="text-end">
+                    <strong>${{ "%.0f"|format(row.monthly_2025) }}</strong>
+                  </td>
+                  <td><small>{{ row.note }}</small></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Per-Person Summary Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-success h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-person"></i> Living Alone
-                    </h6>
-                    <h3 class="card-title text-success mb-1">
-                        ${{ "%.0f"|format(per_person_summary.per_person_by_household.single) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">per person/month</small>
-                    </p>
-                </div>
-            </div>
+  <!-- Key Insights -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-info">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Key Insights</h5>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-info h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-people"></i> Families
-                    </h6>
-                    <h3 class="card-title text-info mb-1">
-                        ${{ "%.0f"|format(per_person_summary.per_person_by_household.family) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">per person/month</small>
-                    </p>
-                </div>
-            </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li class="mb-2">
+              <strong>Absolute Spending:</strong> Higher-income households spend
+              approximately {{ summary.quintile_range.ratio }}x more on
+              groceries in absolute dollars compared to lowest-income
+              households.
+            </li>
+            <li class="mb-2">
+              <strong>Income Proportion:</strong> Lower-income households spend
+              a significantly higher proportion of their income on groceries
+              (~18% for lowest quintile vs ~7% for highest).
+            </li>
+            <li class="mb-2">
+              <strong>Household Size Effect:</strong> Larger households (couple
+              with children) spend more total but less per person than smaller
+              households, indicating economies of scale.
+            </li>
+            <li class="mb-2">
+              <strong>NDIS Context:</strong> DSP-only recipients (monthly
+              spending ~${{ "%.0f"|format(summary.ndis_range.dsp_only) }}) fall
+              well below the national aggregate average, highlighting cost
+              pressures on disability support households.
+            </li>
+            <li class="mb-0">
+              <strong>Data Currency:</strong> These estimates are based on
+              2015-16 survey data adjusted for inflation. Actual current
+              patterns may differ due to COVID-19 impacts, cost-of-living
+              pressures, and changed shopping behaviors.
+            </li>
+          </ul>
         </div>
-
-        <div class="col-md-3">
-            <div class="card border-warning h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-percent"></i> Economies of Scale
-                    </h6>
-                    <h3 class="card-title text-warning mb-1">
-                        {{ "%.0f"|format(per_person_summary.economies_of_scale.savings_pct) }}%
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">savings in families</small>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-danger h-100">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <i class="bi bi-heart"></i> Single Parents
-                    </h6>
-                    <h3 class="card-title text-danger mb-1">
-                        ${{ "%.0f"|format(per_person_summary.per_person_by_household.single_parent) }}
-                    </h3>
-                    <p class="card-text">
-                        <small class="text-muted">per person/month</small>
-                    </p>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Per-Person Comparison Charts -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Per-Person vs Per-Household (Income)</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="perPersonIncomeChart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Per-Person vs Per-Household (Household Type)</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="perPersonHouseholdChart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
+  <!-- Methodology Note -->
+  <div class="row">
+    <div class="col-12">
+      <div class="alert alert-secondary">
+        <h5 class="alert-heading">
+          <i class="bi bi-info-circle"></i> About This Analysis
+        </h5>
+        <p>
+          This distribution analysis uses
+          <strong>ABS Household Expenditure Survey (HES) 2015-16</strong> data,
+          which provides detailed household-level expenditure information by
+          income, household composition, and demographic characteristics. Unlike
+          the MHSI data used on the Dashboard page (which provides national
+          aggregates only), HES captures the distribution of spending across
+          different household types.
+        </p>
+        <p class="mb-0">
+          <strong>Source:</strong> ABS Catalogue 6530.0 - Household Expenditure
+          Survey, Australia: Summary of Results, 2015-16<br />
+          <strong>Inflation Adjustment:</strong> Food CPI used to convert
+          2015-16 dollars to estimated 2025 equivalents ({{
+          summary.cpi_adjustment }})<br />
+          <strong>Next Update:</strong> ABS HES 2023-24 data expected late
+          2025/early 2026
+        </p>
+      </div>
     </div>
-
-    <!-- Per-Person by Income Quintile Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Per-Person Spending by Income Level</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Income Quintile</th>
-                                    <th class="text-center">Avg Household Size</th>
-                                    <th class="text-end">Per-Household<br><small class="text-muted">(2025 $)</small></th>
-                                    <th class="text-end">Per-Person<br><small class="text-muted">(2025 $)</small></th>
-                                    <th>Insight</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in quintile_data %}
-                                <tr>
-                                    <td><strong>{{ row.quintile }}</strong></td>
-                                    <td class="text-center">{{ "%.1f"|format(row.avg_household_size) }}</td>
-                                    <td class="text-end">${{ "%.0f"|format(row.monthly_2025) }}</td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(row.per_person_monthly_2025) }}</strong></td>
-                                    <td>
-                                        <small>
-                                        {% if loop.index == 1 %}
-                                            Smallest households, highest per-person cost
-                                        {% elif loop.index == 2 %}
-                                            Mix of singles and small families
-                                        {% elif loop.index == 3 %}
-                                            Middle-sized households
-                                        {% elif loop.index == 4 %}
-                                            Larger households, moderate per-person
-                                        {% else %}
-                                            Largest households, economies of scale
-                                        {% endif %}
-                                        </small>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cross-Tabulation Matrix -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-grid-3x3"></i> Per-Person Spending Matrix: Income × Household Type
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="mb-3">
-                        <strong>Estimated monthly per-person grocery spending</strong> by income level and household composition (2025 dollars).
-                        These values combine direct HES data with statistical modeling.
-                    </p>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Household Type</th>
-                                    <th class="text-center bg-light">Quintile 1<br><small>(Lowest)</small></th>
-                                    <th class="text-center">Quintile 2</th>
-                                    <th class="text-center bg-light">Quintile 3<br><small>(Middle)</small></th>
-                                    <th class="text-center">Quintile 4</th>
-                                    <th class="text-center bg-light">Quintile 5<br><small>(Highest)</small></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in cross_tab_matrix %}
-                                <tr>
-                                    <td><strong>{{ row['Household Type'] }}</strong></td>
-                                    <td class="text-center bg-light">{{ row['Quintile 1'] }}/person</td>
-                                    <td class="text-center">{{ row['Quintile 2'] }}/person</td>
-                                    <td class="text-center bg-light">{{ row['Quintile 3'] }}/person</td>
-                                    <td class="text-center">{{ row['Quintile 4'] }}/person</td>
-                                    <td class="text-center bg-light">{{ row['Quintile 5'] }}/person</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="alert alert-warning mt-3 mb-0">
-                        <small>
-                            <strong>Methodology Note:</strong> Matrix values are modeled estimates combining household type averages 
-                            with income-based adjustments. Individual households within each cell may vary significantly. 
-                            Use these as general guidance ranges, not precise predictions.
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Per-Person Key Insights -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Key Per-Person Insights</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li class="mb-2">
-                            <strong>Household Size Matters Most:</strong> Per-person spending varies more by household 
-                            composition ($282-$478/person) than by income level (~$450-$501/person across quintiles).
-                        </li>
-                        <li class="mb-2">
-                            <strong>Economies of Scale:</strong> Living alone costs approximately 
-                            {{ "%.0f"|format(per_person_summary.economies_of_scale.savings_pct) }}% more per person 
-                            than living in a family household due to bulk buying, sharing staples, and reduced waste.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Single Parents Face Double Challenge:</strong> Single parent households have the 
-                            lowest per-person spending (${{ "%.0f"|format(per_person_summary.per_person_by_household.single_parent) }}/person), 
-                            reflecting both budget constraints AND economies of scale from larger household size.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Income Effect is Moderate:</strong> Higher-income households spend slightly more 
-                            per person (~$501 vs $474/person), but the difference is much smaller than the household 
-                            size effect. This suggests food budgets are relatively inflexible.
-                        </li>
-                        <li class="mb-0">
-                            <strong>Practical Implication for NDIS:</strong> When assessing adequate NDIS support for 
-                            food expenses, household composition matters as much as income level. A single NDIS participant 
-                            living alone needs ~$478/month, while one in a family household needs ~$364/month.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NDIS Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="h3 mb-3">
-                <i class="bi bi-heart-pulse text-primary"></i> NDIS-Specific Analysis
-            </h2>
-            <p class="text-muted">
-                Grocery spending estimates for households with NDIS participants and DSP recipients
-            </p>
-        </div>
-    </div>
-
-    <!-- NDIS Chart -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Monthly Spending by NDIS Household Segment</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="ndisChart" height="250"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- NDIS Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">NDIS Segment Details</h5>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Household Segment</th>
-                                    <th>Household Income Range</th>
-                                    <th>Income Quintile</th>
-                                    <th class="text-end">Monthly Spending<br><small class="text-muted">(2025 $)</small></th>
-                                    <th>Note</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in ndis_data %}
-                                <tr>
-                                    <td><strong>{{ row.segment }}</strong></td>
-                                    <td>{{ row.income_range }}</td>
-                                    <td><span class="badge bg-secondary">{{ row.quintile }}</span></td>
-                                    <td class="text-end"><strong>${{ "%.0f"|format(row.monthly_2025) }}</strong></td>
-                                    <td><small>{{ row.note }}</small></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Key Insights -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-info">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Key Insights</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li class="mb-2">
-                            <strong>Absolute Spending:</strong> Higher-income households spend approximately 
-                            {{ summary.quintile_range.ratio }}x more on groceries in absolute dollars compared to 
-                            lowest-income households.
-                        </li>
-                        <li class="mb-2">
-                            <strong>Income Proportion:</strong> Lower-income households spend a significantly higher 
-                            proportion of their income on groceries (~18% for lowest quintile vs ~7% for highest).
-                        </li>
-                        <li class="mb-2">
-                            <strong>Household Size Effect:</strong> Larger households (couple with children) spend more 
-                            total but less per person than smaller households, indicating economies of scale.
-                        </li>
-                        <li class="mb-2">
-                            <strong>NDIS Context:</strong> DSP-only recipients (monthly spending ~${{ "%.0f"|format(summary.ndis_range.dsp_only) }}) 
-                            fall well below the national aggregate average, highlighting cost pressures on disability support households.
-                        </li>
-                        <li class="mb-0">
-                            <strong>Data Currency:</strong> These estimates are based on 2015-16 survey data adjusted for 
-                            inflation. Actual current patterns may differ due to COVID-19 impacts, cost-of-living pressures, 
-                            and changed shopping behaviors.
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Methodology Note -->
-    <div class="row">
-        <div class="col-12">
-            <div class="alert alert-secondary">
-                <h5 class="alert-heading"><i class="bi bi-info-circle"></i> About This Analysis</h5>
-                <p>
-                    This distribution analysis uses <strong>ABS Household Expenditure Survey (HES) 2015-16</strong> data, 
-                    which provides detailed household-level expenditure information by income, household composition, and 
-                    demographic characteristics. Unlike the MHSI data used on the Dashboard page (which provides national 
-                    aggregates only), HES captures the distribution of spending across different household types.
-                </p>
-                <p class="mb-0">
-                    <strong>Source:</strong> ABS Catalogue 6530.0 - Household Expenditure Survey, Australia: Summary of Results, 2015-16<br>
-                    <strong>Inflation Adjustment:</strong> Food CPI used to convert 2015-16 dollars to estimated 2025 equivalents ({{ summary.cpi_adjustment }})<br>
-                    <strong>Next Update:</strong> ABS HES 2023-24 data expected late 2025/early 2026
-                </p>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block extra_scripts %}
+{% endblock %} {% block extra_scripts %}
 <script>
-// Fetch and display charts
-document.addEventListener('DOMContentLoaded', async function() {
-    
+  // Fetch and display charts
+  document.addEventListener("DOMContentLoaded", async function () {
     // Quintile Spending Chart
-    const quintileResponse = await fetch('/api/distribution/quintiles');
+    const quintileResponse = await fetch("/api/distribution/quintiles");
     const quintileData = await quintileResponse.json();
-    
-    const ctx1 = document.getElementById('quintileSpendingChart').getContext('2d');
+
+    const ctx1 = document
+      .getElementById("quintileSpendingChart")
+      .getContext("2d");
     new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: quintileData.labels,
-            datasets: [{
-                label: '2025 $ (CPI adjusted)',
-                data: quintileData.monthly_2025,
-                backgroundColor: 'rgba(13, 110, 253, 0.7)',
-                borderColor: 'rgb(13, 110, 253)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.parsed.y.toFixed(0) + '/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: quintileData.labels,
+        datasets: [
+          {
+            label: "2025 $ (CPI adjusted)",
+            data: quintileData.monthly_2025,
+            backgroundColor: "rgba(13, 110, 253, 0.7)",
+            borderColor: "rgb(13, 110, 253)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return "$" + context.parsed.y.toFixed(0) + "/month";
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     // Proportion of Income Chart
-    const ctx2 = document.getElementById('proportionChart').getContext('2d');
+    const ctx2 = document.getElementById("proportionChart").getContext("2d");
     new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: quintileData.labels,
-            datasets: [{
-                label: '% of Income',
-                data: quintileData.proportion_income,
-                backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                borderColor: 'rgb(220, 53, 69)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.parsed.y.toFixed(1) + '% of income';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: quintileData.labels,
+        datasets: [
+          {
+            label: "% of Income",
+            data: quintileData.proportion_income,
+            backgroundColor: "rgba(220, 53, 69, 0.7)",
+            borderColor: "rgb(220, 53, 69)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return context.parsed.y.toFixed(1) + "% of income";
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(0) + '%';
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return value.toFixed(0) + "%";
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     // Household Type Charts
-    const householdResponse = await fetch('/api/distribution/household');
+    const householdResponse = await fetch("/api/distribution/household");
     const householdData = await householdResponse.json();
-    
-    const ctx3 = document.getElementById('householdTotalChart').getContext('2d');
+
+    const ctx3 = document
+      .getElementById("householdTotalChart")
+      .getContext("2d");
     new Chart(ctx3, {
-        type: 'bar',
-        data: {
-            labels: householdData.labels,
-            datasets: [{
-                label: 'Total Monthly Spending',
-                data: householdData.monthly_2025,
-                backgroundColor: 'rgba(25, 135, 84, 0.7)',
-                borderColor: 'rgb(25, 135, 84)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.parsed.y.toFixed(0) + '/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: householdData.labels,
+        datasets: [
+          {
+            label: "Total Monthly Spending",
+            data: householdData.monthly_2025,
+            backgroundColor: "rgba(25, 135, 84, 0.7)",
+            borderColor: "rgb(25, 135, 84)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return "$" + context.parsed.y.toFixed(0) + "/month";
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-    
-    const ctx4 = document.getElementById('householdPerPersonChart').getContext('2d');
+
+    const ctx4 = document
+      .getElementById("householdPerPersonChart")
+      .getContext("2d");
     new Chart(ctx4, {
-        type: 'bar',
-        data: {
-            labels: householdData.labels,
-            datasets: [{
-                label: 'Per Person Monthly',
-                data: householdData.per_person_2025,
-                backgroundColor: 'rgba(255, 193, 7, 0.7)',
-                borderColor: 'rgb(255, 193, 7)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.parsed.y.toFixed(0) + '/person/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: householdData.labels,
+        datasets: [
+          {
+            label: "Per Person Monthly",
+            data: householdData.per_person_2025,
+            backgroundColor: "rgba(255, 193, 7, 0.7)",
+            borderColor: "rgb(255, 193, 7)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return "$" + context.parsed.y.toFixed(0) + "/person/month";
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     // NDIS Chart
-    const ndisResponse = await fetch('/api/distribution/ndis');
+    const ndisResponse = await fetch("/api/distribution/ndis");
     const ndisData = await ndisResponse.json();
-    
-    const ctx5 = document.getElementById('ndisChart').getContext('2d');
+
+    const ctx5 = document.getElementById("ndisChart").getContext("2d");
     new Chart(ctx5, {
-        type: 'bar',
-        data: {
-            labels: ndisData.labels,
-            datasets: [{
-                label: 'Monthly Spending',
-                data: ndisData.monthly_2025,
-                backgroundColor: 'rgba(111, 66, 193, 0.7)',
-                borderColor: 'rgb(111, 66, 193)',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.parsed.y.toFixed(0) + '/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: ndisData.labels,
+        datasets: [
+          {
+            label: "Monthly Spending",
+            data: ndisData.monthly_2025,
+            backgroundColor: "rgba(111, 66, 193, 0.7)",
+            borderColor: "rgb(111, 66, 193)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return "$" + context.parsed.y.toFixed(0) + "/month";
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     // Per-Person Comparison Charts
-    const perPersonResponse = await fetch('/api/distribution/per-person');
+    const perPersonResponse = await fetch("/api/distribution/per-person");
     const perPersonData = await perPersonResponse.json();
-    
+
     // Per-Person Income Comparison
-    const ctx6 = document.getElementById('perPersonIncomeChart').getContext('2d');
+    const ctx6 = document
+      .getElementById("perPersonIncomeChart")
+      .getContext("2d");
     new Chart(ctx6, {
-        type: 'bar',
-        data: {
-            labels: perPersonData.quintile_comparison.labels,
-            datasets: [
-                {
-                    label: 'Per-Household',
-                    data: perPersonData.quintile_comparison.per_household,
-                    backgroundColor: 'rgba(13, 110, 253, 0.5)',
-                    borderColor: 'rgb(13, 110, 253)',
-                    borderWidth: 2
-                },
-                {
-                    label: 'Per-Person',
-                    data: perPersonData.quintile_comparison.per_person,
-                    backgroundColor: 'rgba(25, 135, 84, 0.7)',
-                    borderColor: 'rgb(25, 135, 84)',
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: true, position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': $' + context.parsed.y.toFixed(0) + '/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: perPersonData.quintile_comparison.labels,
+        datasets: [
+          {
+            label: "Per-Household",
+            data: perPersonData.quintile_comparison.per_household,
+            backgroundColor: "rgba(13, 110, 253, 0.5)",
+            borderColor: "rgb(13, 110, 253)",
+            borderWidth: 2,
+          },
+          {
+            label: "Per-Person",
+            data: perPersonData.quintile_comparison.per_person,
+            backgroundColor: "rgba(25, 135, 84, 0.7)",
+            borderColor: "rgb(25, 135, 84)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "top" },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return (
+                  context.dataset.label +
+                  ": $" +
+                  context.parsed.y.toFixed(0) +
+                  "/month"
+                );
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-    
+
     // Per-Person Household Type Comparison
-    const ctx7 = document.getElementById('perPersonHouseholdChart').getContext('2d');
+    const ctx7 = document
+      .getElementById("perPersonHouseholdChart")
+      .getContext("2d");
     new Chart(ctx7, {
-        type: 'bar',
-        data: {
-            labels: perPersonData.household_type_comparison.labels,
-            datasets: [
-                {
-                    label: 'Per-Household',
-                    data: perPersonData.household_type_comparison.per_household,
-                    backgroundColor: 'rgba(13, 110, 253, 0.5)',
-                    borderColor: 'rgb(13, 110, 253)',
-                    borderWidth: 2
-                },
-                {
-                    label: 'Per-Person',
-                    data: perPersonData.household_type_comparison.per_person,
-                    backgroundColor: 'rgba(25, 135, 84, 0.7)',
-                    borderColor: 'rgb(25, 135, 84)',
-                    borderWidth: 2
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: true, position: 'top' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': $' + context.parsed.y.toFixed(0) + '/month';
-                        }
-                    }
-                }
+      type: "bar",
+      data: {
+        labels: perPersonData.household_type_comparison.labels,
+        datasets: [
+          {
+            label: "Per-Household",
+            data: perPersonData.household_type_comparison.per_household,
+            backgroundColor: "rgba(13, 110, 253, 0.5)",
+            borderColor: "rgb(13, 110, 253)",
+            borderWidth: 2,
+          },
+          {
+            label: "Per-Person",
+            data: perPersonData.household_type_comparison.per_person,
+            backgroundColor: "rgba(25, 135, 84, 0.7)",
+            borderColor: "rgb(25, 135, 84)",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "top" },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return (
+                  context.dataset.label +
+                  ": $" +
+                  context.parsed.y.toFixed(0) +
+                  "/month"
+                );
+              },
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toFixed(0);
-                        }
-                    }
-                }
-            }
-        }
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return "$" + value.toFixed(0);
+              },
+            },
+          },
+        },
+      },
     });
-});
+  });
 </script>
 {% endblock %}
